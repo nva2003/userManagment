@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/userMangment">
+    <!--<Resource name="jdbc/userMangment" url="jdbc:hsqldb:file:database/appeal"-->
+    <!--<Resource name="jdbc/userMangment" url="jdbc:hsqldb:mem:testdb"-->
+    <Resource name="jdbc/userMangment" url="jdbc:hsqldb:hsql://localhost:9001/testdb"
+         driverClassName="org.hsqldb.jdbcDriver" username="SA"
+         password="" auth="Container" type="javax.sql.DataSource"
+         maxActive="3" maxIdle="2" maxWait="10000" />
+ </Context>

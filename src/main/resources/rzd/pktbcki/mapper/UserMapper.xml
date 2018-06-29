@@ -1,0 +1,173 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rzd.pktbcki.mapper.UserMapper">
+
+    <resultMap id="userMap"  type="rzd.pktbcki.user.User">
+        <id  property="id" column="id"/>
+        <result property="lastName" column="last_name"/>
+        <result property="firstName" column="first_name"/>
+        <result property="patronymicName" column="midle_name"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="company" column="company"/>
+        <result property="department" column="department"/>
+        <result property="title" column="title"/>
+        <result property="timeBefore" column="time_before"/>
+        <result property="ip" column="ip"/>
+        <result property="numberASOZ" column="NUMBER_ASOZ"/>
+        <result property="whenChanged" column="when_Changed"/>
+        <result property="whenCreated" column="when_Created"/>
+        <result property="idAdminChanged" column="id_Admin_Changed"/>
+        <result property="idAdminCreated" column="id_Admin_Created"/>
+    </resultMap>
+
+
+    <select id="findUserById" resultMap="userMap"  parameterType="java.lang.Integer">
+      SELECT
+          id,
+          last_name,
+          first_name,
+          midle_name,
+          email,
+          phone,
+          company,
+          department,
+          title,
+          time_before,
+          ip,
+          NUMBER_ASOZ,
+          when_Changed,
+          when_Created,
+          id_Admin_Changed,
+          id_Admin_Created
+      FROM
+        ${schemeUSERS}USERS
+      WHERE id=#{id}
+    </select>
+
+    <select id="searchUserList"  resultMap="userMap" parameterType="rzd.pktbcki.user.User">
+      SELECT
+          id,
+          last_name,
+          first_name,
+          midle_name,
+          email,
+          phone,
+          company,
+          department,
+          title,
+          time_before,
+          ip,
+          NUMBER_ASOZ,
+          when_Changed,
+          when_Created,
+          id_Admin_Changed,
+          id_Admin_Created
+      FROM
+        ${schemeUSERS}USERS
+        <where>
+          <if test="lastName != null and lastName != ''">
+              last_name = #{lastName}
+          </if>
+          <if test="firstName != null and firstName != ''">
+              AND first_name like #{firstName}
+          </if>
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="userMap">
+      SELECT
+          id,
+          last_name,
+          first_name,
+          midle_name,
+          email,
+          phone,
+          company,
+          department,
+          title,
+          time_before,
+          ip,
+          NUMBER_ASOZ,
+          when_Changed,
+          when_Created,
+          id_Admin_Changed,
+          id_Admin_Created
+      FROM
+        ${schemeUSERS}USERS
+    </select>
+
+
+
+    <delete id="deleteUser" parameterType="java.lang.Integer">
+        delete
+        from
+        ${schemeUSERS}USERS
+        where ID = #{ID}
+    </delete>
+
+    <update id="updateUser" parameterType="rzd.pktbcki.user.User">
+      UPDATE ${schemeUSERS}USERS SET
+
+               id = #{id},
+        last_Name = #{lastName},
+        first_Name = #{firstName},
+        midle_Name = #{patronymicName},
+        email = #{email},
+        phone = #{phone},
+        company = #{company},
+        department = #{department},
+        title = #{title},
+        time_Before = #{timeBefore},
+        ip = #{ip},
+        number_ASOZ = #{numberASOZ},
+        when_Changed = current_timestamp ,
+        id_Admin_Changed = #{idAdminChanged},
+        id_Admin_Created = #{idAdminCreated}
+
+      WHERE  ID = #{id}
+    </update>
+
+    <insert id="insertUser" parameterType="rzd.pktbcki.user.User">
+      INSERT INTO ${schemeUSERS}USERS
+      (
+                id,
+          last_name,
+          first_name,
+          midle_name,
+          email,
+          phone,
+          company,
+          department,
+          title,
+          time_before,
+          ip,
+          NUMBER_ASOZ,
+          when_Changed,
+          when_Created,
+          id_Admin_Changed,
+          id_Admin_Created
+      )
+      VALUES
+      (
+        #{id},
+        #{lastName},
+        #{firstName},
+        #{patronymicName},
+        #{email},
+        #{phone},
+        #{company},
+        #{department},
+        #{title},
+        #{timeBefore},
+        #{ip},
+        #{numberASOZ},
+        current_timestamp ,
+        current_timestamp ,
+        #{idAdminChanged},
+        #{idAdminCreated}
+
+      )
+    </insert>
+</mapper>

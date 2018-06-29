@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html   xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+       layout:decorate="~{fragments/layout }">
+
+<body>
+
+<th:block layout:fragment="poststyle">
+<!--    <link rel="stylesheet" type="text/css" media="all" href="../../../webapp/css/bootstrap.min2.css"/> -->
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <h2>User <b>Management</b></h2>
+                    </div>
+                    <div class="col-sm-7">
+                        <a  class="btn btn-primary"  th:href="@{/users/new}">Add New User</span></a>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Last Name</th>
+                    <th>Pat.Name</th>
+                    <th>First Name</th>
+                    <th>Date Created</th>
+                    <th>email</th>
+                    <th>Телефон</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user,itrStat : ${selections}">
+                    <td th:text="${itrStat.index} ">1</td>
+                    <td th:text="${user.lastName}"> Michael Holz</td>
+                    <td th:text="${user.patronymicName}"> Michael Holz</td>
+                    <td th:text="${user.firstName}"> Michael Holz</td>
+                    <td th:text="${user.whenCreated}">04/10/2013</td>
+                    <td th:text="${user.email}">Admin</td>
+                    <td th:text="${user.phone}"></td>
+                    <td>
+                        <a href="#" th:href="@{/users/__${user.id}__}" class="btn btn-info btn-sm edit">
+                            <span class="glyphicon glyphicon-info-sign"></span> Инфо
+                        </a>
+
+                        <a href="#" th:href="@{/users/__${user.id}__/edit}" class="btn btn-info btn-sm edit">
+                            <span class="glyphicon glyphicon-edit"></span> Edit
+                        </a>
+
+                        <a href="#" th:href="@{/users/__${user.id}__/delete}" class="btn btn-info btn-sm delete">
+                            <span class="glyphicon glyphicon-remove-sign"></span> Remove
+                        </a>
+                    </td>
+
+                </tr>
+
+
+                </tbody>
+            </table>
+<!--
+            <div class="clearfix">
+                <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
+                <ul class="pagination">
+                    <li class="page-item disabled"><a href="#">Previous</a></li>
+                    <li class="page-item"><a href="#" class="page-link">1</a></li>
+                    <li class="page-item"><a href="#" class="page-link">2</a></li>
+                    <li class="page-item active"><a href="#" class="page-link">3</a></li>
+                    <li class="page-item"><a href="#" class="page-link">4</a></li>
+                    <li class="page-item"><a href="#" class="page-link">5</a></li>
+                    <li class="page-item"><a href="#" class="page-link">Next</a></li>
+                </ul>
+            </div>
+-->
+        </div>
+    </div>
+</div>
+
+</body>
+</html>                                		                            

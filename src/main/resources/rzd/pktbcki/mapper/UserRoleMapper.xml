@@ -1,0 +1,101 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rzd.pktbcki.mapper.UserRoleMapper">
+
+    <resultMap id="userRoleMap"  type="rzd.pktbcki.user.UserRole">
+        <id  property="id" column="role_id"/>
+        <result property="userName" column="user_Name"/>
+        <result property="roleName" column="role_Name"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+
+    <select id="findById" resultMap="userRoleMap"  parameterType="java.lang.Integer">
+      SELECT
+            role_id,
+            user_Name,
+            role_Name,
+            description
+      FROM
+        ${schemeUSER_ROLES}USER_ROLES
+      WHERE role_id=#{id}
+    </select>
+
+    <select id="searchList"  resultMap="userRoleMap" parameterType="rzd.pktbcki.user.UserRole">
+      SELECT
+        role_id,
+          user_Name,
+          role_Name,
+          description
+      FROM
+        ${schemeUSER_ROLES}USER_ROLES
+        <where>
+          <if test="lastName != null and lastName != ''">
+              last_name = #{lastName}
+          </if>
+          <if test="firstName != null and firstName != ''">
+              AND first_name like #{firstName}
+          </if>
+        </where>
+    </select>
+
+    <select id="findAllRoles" resultMap="userRoleMap">
+      SELECT DISTINCT
+            role_Name,
+            description
+      FROM
+        ${schemeUSER_ROLES}USER_ROLES
+    </select>
+
+    <select id="findAll" resultMap="userRoleMap">
+      SELECT
+            role_id,
+            user_Name,
+            role_Name,
+            description
+      FROM
+        ${schemeUSER_ROLES}USER_ROLES
+    </select>
+
+
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete
+        from
+        ${schemeUSER_ROLES}USER_ROLES
+        where role_id = #{ID}
+    </delete>
+
+    <delete id="deleteByRoleName" parameterType="java.lang.String">
+        delete
+        from
+        ${schemeUSER_ROLES}USER_ROLES
+        where role_Name = #{roleName}
+    </delete>
+
+    <update id="update" parameterType="rzd.pktbcki.user.UserRole">
+      UPDATE ${schemeUSER_ROLES}USER_ROLES SET
+
+        role_Name = #{roleName},
+        description = #{description}
+
+    </update>
+
+    <insert id="insert" parameterType="rzd.pktbcki.user.UserRole">
+      INSERT INTO ${schemeUSER_ROLES}USER_ROLES
+      (
+                role_id,
+            user_Name,
+            role_Name,
+            description
+      )
+      VALUES
+      (
+        #{id},
+        #{userName},
+        #{roleName},
+        #{description}
+      )
+    </insert>
+</mapper>

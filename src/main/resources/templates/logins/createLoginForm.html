@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html   xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{fragments/layout }">
+
+<body>
+
+<th:block layout:fragment="poststyle">
+    <!--    <link rel="stylesheet" type="text/css" media="all" href="../../../webapp/css/bootstrap.min2.css"/> -->
+    <script type="text/javascript" src="../../../webapp/js/moment-with-locales.js"  th:src=@{/js/moment-with-locales.min.js}></script>
+    <script type="text/javascript" src="../../../webapp/js/bootstrap-datetimepicker.js"  th:src=@{/js/bootstrap-datetimepicker.min.js}></script>
+    <link rel="stylesheet" href="../../../webapp/css/bootstrap-datetimepicker.min.css" th:href="@{/css/bootstrap-datetimepicker.min.css}"/>
+
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container">
+        <form th:object="${login}" class="form-horizontal" method="post">
+            <div class="row">
+                <div class="col-sm-2">
+                    <input type="hidden" name="id" th:value="*{id}" />
+                    <span>Пользователь:</span>
+                </div>
+                <div class="col-sm-10">
+                    <span th:text="${login.user?.firstName + ' ' + login.user?.lastName}" />
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <input
+                            th:replace="~{fragments/inputField :: input ('Логин', 'userName', 'text')}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <input
+                            th:replace="~{fragments/inputField :: input ('Пароль', 'password', 'text')}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <input th:replace="~{fragments/inputField :: input ('Время действия логина', 'passwordExpirationTime', 'date')}" /></div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                <div class="pull-right">
+                    <button
+                            th:with="text=${login['new']} ? 'Добавить логин' : 'Обновить логин'"
+                            class="btn btn-default" type="submit" th:text="${text}">Add
+                        Login</button>
+                </div>
+                </div>
+                <div class="col-sm-6">
+                    <a href="#" th:href="@{/users/__${login.user.id}__}" class="btn btn-default">
+                        <span  th:text="#{btn.cancel}">Отмена</span>
+                    </a>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+</body>
+
+</html>

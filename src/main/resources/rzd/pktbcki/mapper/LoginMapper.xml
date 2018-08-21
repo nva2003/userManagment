@@ -1,0 +1,190 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rzd.pktbcki.mapper.LoginMapper">
+
+    <resultMap id="loginMap"  type="rzd.pktbcki.user.Login">
+        <id  property="id" column="login_id"/>
+        <result property="userName" column="user_Name"/>
+        <result property="password" column="password"/>
+        <result property="userId" column="user_id"/>
+        <result property="passwordInitial" column="pwd_initial"/>
+        <result property="passwordDateSet" column="pwd_set_date"/>
+        <result property="passwordExpirationTime" column="pwd_expiration_time"/>
+        <result property="passwordState" column="pwd_state"/>
+
+
+
+    </resultMap>
+
+
+    <select id="findById" resultMap="loginMap"  parameterType="java.lang.Integer">
+      SELECT
+        login_id,
+        user_name,
+        password,
+        user_id,
+        pwd_initial,
+        pwd_set_date,
+        pwd_expiration_time,
+        pwd_state
+         FROM
+        ${schemeLOGINS}LOGINS
+      WHERE login_id=#{id}
+    </select>
+
+    <select id="searchLoginList"  resultMap="loginMap" parameterType="rzd.pktbcki.user.Login">
+      SELECT
+        login_id,
+        user_name,
+        password,
+        user_id,
+        pwd_initial,
+        pwd_set_date,
+        pwd_expiration_time,
+        pwd_state
+      FROM
+        ${schemeLOGINS}LOGINS
+        <where>
+          <if test="userId != null and userId != ''">
+              user_id = #{userId}
+          </if>
+          <if test="userName != null and userName != ''">
+              and user_name = #{userName}
+          </if>
+          <if test="systemId != null and systemId != ''">
+              and system_id = #{systemId}
+          </if>
+        </where>
+    </select>
+
+<!-- deprcated
+    <select id="findAllLogins" resultMap="loginMap">
+      SELECT DISTINCT
+          login_id,
+          user_name,
+          password,
+          user_id,
+          pwd_initial,
+          pwd_set_date,
+          pwd_expiration_time,
+          pwd_state
+        FROM
+          ${schemeLOGINS}LOGINS
+    </select>
+-->
+<!-- deprecated
+
+    <select id="findAll" resultMap="loginMap">
+      SELECT
+          login_id,
+          user_name,
+          password,
+          user_id,
+          pwd_initial,
+          pwd_set_date,
+          pwd_expiration_time,
+          pwd_state
+      FROM
+        ${schemeLOGINS}LOGINS
+    </select>
+-->
+
+
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete
+        from
+        ${schemeLOGINS}LOGINS
+        where login_id = #{ID}
+    </delete>
+
+<!--
+    <delete id="deleteByLoginName" parameterType="java.lang.String">
+        delete
+        from
+        ${schemeLOGINS}LOGINS
+        where role_Name = #{roleName}
+    </delete>
+-->
+
+    <update id="update" parameterType="rzd.pktbcki.user.Login">
+      UPDATE ${schemeLOGINS}LOGINS SET
+
+        user_name = #{userName}
+        ,password = #{password}
+        ,pwd_expiration_time = #{passwordExpirationTime}
+        ,editor = #{editor}
+        ,editor_ip = #{editorIP}
+        , when_Changed = current_timestamp
+        where login_id = #{id}
+        <if test="systemId != null and systemId != ''">
+          and system_id = #{systemId}
+        </if>
+
+    </update>
+
+    <!--add table systems-->
+    <insert id="insert" parameterType="rzd.pktbcki.user.Login">
+      INSERT INTO ${schemeLOGINS}LOGINS
+      (
+        login_id
+        , user_name
+        , password
+        , user_id
+        , pwd_initial
+        , pwd_set_date
+        , pwd_expiration_time
+        , pwd_state
+        , when_created
+        , when_changed
+        , system_id
+        , creator
+        , editor
+        , creator_ip
+        , editor_ip
+      )
+      VALUES
+      (
+          #{id}
+          ,#{userName}
+          ,#{password}
+          ,#{userId}
+          ,#{passwordInitial}
+            <choose>
+              <when test="passwordDateSet != null">
+                  ,#{passwordDateSet}
+              </when>
+              <otherwise>
+                  ,current_timestamp
+              </otherwise>
+            </choose>
+            <choose>
+              <when test="passwordExpirationTime != null">
+                  ,#{passwordExpirationTime}
+              </when>
+              <otherwise>
+                  ,current_timestamp
+              </otherwise>
+            </choose>
+          ,#{passwordState}
+          ,current_timestamp
+          ,current_timestamp
+            <choose>
+              <when test="systemId != null">
+                  ,#{systemId}
+              </when>
+              <otherwise>
+                  ,0
+              </otherwise>
+            </choose>
+        , #{creator}
+        , #{editor}
+        , #{creatorIP}
+        , #{editorIP}
+
+      )
+
+
+    </insert>
+</mapper>

@@ -4,7 +4,8 @@
 <mapper namespace="rzd.pktbcki.mapper.UserMapper">
 
     <resultMap id="userMap"  type="rzd.pktbcki.user.User">
-        <id  property="id" column="id"/>
+        <id  property="id" column="user_id"/>
+        <result property="inputUserId" column="input_user_id"/>
         <result property="lastName" column="last_name"/>
         <result property="firstName" column="first_name"/>
         <result property="patronymicName" column="midle_name"/>
@@ -18,14 +19,82 @@
         <result property="numberASOZ" column="NUMBER_ASOZ"/>
         <result property="whenChanged" column="when_Changed"/>
         <result property="whenCreated" column="when_Created"/>
-        <result property="idAdminChanged" column="id_Admin_Changed"/>
-        <result property="idAdminCreated" column="id_Admin_Created"/>
+        <result property="creator" column="creator"/>
+        <result property="editor" column="editor"/>
+    </resultMap>
+
+
+    <resultMap id="userWithLoginsMap"  type="rzd.pktbcki.user.User">
+        <id  property="id" column="user_id"/>
+        <result property="inputUserId" column="user_Id"/>
+        <result property="lastName" column="last_name"/>
+        <result property="firstName" column="first_name"/>
+        <result property="patronymicName" column="midle_name"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="company" column="company"/>
+        <result property="department" column="department"/>
+        <result property="title" column="title"/>
+        <result property="timeBefore" column="time_before"/>
+        <result property="ip" column="ip"/>
+        <result property="numberASOZ" column="NUMBER_ASOZ"/>
+        <result property="whenChanged" column="when_Changed"/>
+        <result property="whenCreated" column="when_Created"/>
+        <result property="creator" column="creator"/>
+        <result property="editor" column="editor"/>
+        <collection  property="logins" ofType="rzd.pktbcki.user.Login">
+            <id  property="id" column="login_id"/>
+            <result property="userName" column="user_Name"/>
+            <result property="password" column="password"/>
+            <result property="userId" column="l_user_id"/>
+            <result property="passwordInitial" column="pwd_initial"/>
+            <result property="passwordDateSet" column="pwd_set_date"/>
+            <result property="passwordExpirationTime" column="pwd_expiration_time"/>
+            <result property="passwordState" column="pwd_state"/>
+        </collection >
+    </resultMap>
+
+    <resultMap id="userWithLoginsAndRolesMap"  type="rzd.pktbcki.user.User">
+        <id  property="id" column="user_id"/>
+        <result property="inputUserId" column="user_Id"/>
+        <result property="lastName" column="last_name"/>
+        <result property="firstName" column="first_name"/>
+        <result property="patronymicName" column="midle_name"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="company" column="company"/>
+        <result property="department" column="department"/>
+        <result property="title" column="title"/>
+        <result property="timeBefore" column="time_before"/>
+        <result property="ip" column="ip"/>
+        <result property="numberASOZ" column="NUMBER_ASOZ"/>
+        <result property="whenChanged" column="when_Changed"/>
+        <result property="whenCreated" column="when_Created"/>
+        <result property="creator" column="creator"/>
+        <result property="editor" column="editor"/>
+        <collection  property="logins" ofType="rzd.pktbcki.user.Login">
+            <id  property="id" column="login_id"/>
+            <result property="userName" column="user_Name"/>
+            <result property="password" column="password"/>
+            <result property="userId" column="l_user_id"/>
+            <result property="passwordInitial" column="pwd_initial"/>
+            <result property="passwordDateSet" column="pwd_set_date"/>
+            <result property="passwordExpirationTime" column="pwd_expiration_time"/>
+            <result property="passwordState" column="pwd_state"/>
+                <collection  property="roles" ofType="rzd.pktbcki.user.UserRole">
+                    <id  property="id" column="role_id"/>
+                    <result property="userName" column="r_user_name"/>
+                    <result property="roleName" column="role_name"/>
+                    <result property="description" column="description"/>
+                </collection>
+        </collection >
     </resultMap>
 
 
     <select id="findUserById" resultMap="userMap"  parameterType="java.lang.Integer">
       SELECT
-          id,
+          user_id,
+          input_user_id,
           last_name,
           first_name,
           midle_name,
@@ -39,16 +108,94 @@
           NUMBER_ASOZ,
           when_Changed,
           when_Created,
-          id_Admin_Changed,
-          id_Admin_Created
+          creator,
+          editor
       FROM
         ${schemeUSERS}USERS
-      WHERE id=#{id}
+      WHERE user_id=#{id}
     </select>
+
+    <select id="getUser" resultMap="userMap"  parameterType="rzd.pktbcki.user.User">
+      SELECT
+          user_id,
+          input_user_id,
+          last_name,
+          first_name,
+          midle_name,
+          email,
+          phone,
+          company,
+          department,
+          title,
+          time_before,
+          ip,
+          NUMBER_ASOZ,
+          when_Changed,
+          when_Created,
+          creator,
+          editor
+      FROM
+        ${schemeUSERS}USERS
+      WHERE email=#{email}
+      and input_user_id = #{inputUserId}
+    </select>
+
+
+    <select id="findUserByIdWithLoginAndRoles" resultMap="userWithLoginsAndRolesMap"  parameterType="Map">
+      SELECT
+          USERS.user_id as user_id,
+          USERS.input_user_id as input_user_id,
+          USERS.last_name as last_name,
+          USERS.first_name as first_name,
+          USERS.midle_name as midle_name,
+          USERS.email as email,
+          USERS.phone as phone,
+          USERS.company as company,
+          USERS.department as department,
+          USERS.title as title,
+          USERS.time_before as time_before,
+          USERS.ip as ip,
+          USERS.NUMBER_ASOZ as NUMBER_ASOZ,
+          USERS.when_Changed as when_Changed,
+          USERS.when_Created as when_Created,
+          USERS.creator as creator,
+          USERS.editor as editor,
+              LOGINS.login_id as login_id,
+          LOGINS.user_name as user_name,
+          LOGINS.password as password,
+          LOGINS.user_id as l_user_id,
+          LOGINS.pwd_initial as pwd_initial,
+          LOGINS.pwd_set_date as pwd_set_date,
+          LOGINS.pwd_expiration_time as pwd_expiration_time,
+          LOGINS.pwd_state as pwd_state,
+            ROLES.role_id as role_id,
+          ROLES.user_Name as r_user_name,
+          ROLES.role_Name as role_name,
+          ROLES.description as description
+
+      FROM
+          ${schemeUSERS}USERS USERS
+        left outer join
+          ${schemeLOGINS}LOGINS LOGINS
+        on
+          USERS.user_id=LOGINS.user_id
+        <if test="systemId != null and systemId != ''">
+            and LOGINS.system_id = #{systemId}
+        </if>
+        left outer join
+          ${schemeUSER_ROLES}USER_ROLES ROLES
+        on
+          LOGINS.user_name=ROLES.user_name
+          and LOGINS.system_id=ROLES.system_id
+      WHERE USERS.user_id=#{userId}
+    </select>
+
+
 
     <select id="searchUserList"  resultMap="userMap" parameterType="rzd.pktbcki.user.User">
       SELECT
-          id,
+        user_id,
+          input_user_id,
           last_name,
           first_name,
           midle_name,
@@ -61,9 +208,9 @@
           ip,
           NUMBER_ASOZ,
           when_Changed,
-          when_Created,
-          id_Admin_Changed,
-          id_Admin_Created
+          when_Created
+          ,creator
+          ,editor
       FROM
         ${schemeUSERS}USERS
         <where>
@@ -73,12 +220,19 @@
           <if test="firstName != null and firstName != ''">
               AND first_name like #{firstName}
           </if>
+          <if test="patronymicName != null and patronymicName != ''">
+              AND midle_name like #{patronymicName}
+          </if>
+          <if test="email != null and email != ''">
+              AND email like #{email}
+          </if>
         </where>
     </select>
 
     <select id="findAll" resultMap="userMap">
       SELECT
-          id,
+          user_id,
+          input_user_id,
           last_name,
           first_name,
           midle_name,
@@ -92,8 +246,8 @@
           NUMBER_ASOZ,
           when_Changed,
           when_Created,
-          id_Admin_Changed,
-          id_Admin_Created
+          creator,
+          editor
       FROM
         ${schemeUSERS}USERS
     </select>
@@ -104,69 +258,76 @@
         delete
         from
         ${schemeUSERS}USERS
-        where ID = #{ID}
+        where user_id = #{ID}
     </delete>
 
     <update id="updateUser" parameterType="rzd.pktbcki.user.User">
       UPDATE ${schemeUSERS}USERS SET
 
-               id = #{id},
-        last_Name = #{lastName},
-        first_Name = #{firstName},
-        midle_Name = #{patronymicName},
-        email = #{email},
-        phone = #{phone},
-        company = #{company},
-        department = #{department},
-        title = #{title},
-        time_Before = #{timeBefore},
-        ip = #{ip},
-        number_ASOZ = #{numberASOZ},
-        when_Changed = current_timestamp ,
-        id_Admin_Changed = #{idAdminChanged},
-        id_Admin_Created = #{idAdminCreated}
+        user_id = #{id}
+        , input_user_id = #{inputUserId}
+        , last_Name = #{lastName}
+        , first_Name = #{firstName}
+        , midle_Name = #{patronymicName}
+        , email = #{email}
+        , phone = #{phone}
+        , company = #{company}
+        , department = #{department}
+        , title = #{title}
+        , time_Before = #{timeBefore}
+        , ip = #{ip}
+        , number_ASOZ = #{numberASOZ}
+        , when_Changed = current_timestamp
+        , editor = #{editor}
+        , editor_IP = #{editorIP}
 
-      WHERE  ID = #{id}
+      WHERE  user_id = #{id}
     </update>
 
     <insert id="insertUser" parameterType="rzd.pktbcki.user.User">
       INSERT INTO ${schemeUSERS}USERS
       (
-                id,
-          last_name,
-          first_name,
-          midle_name,
-          email,
-          phone,
-          company,
-          department,
-          title,
-          time_before,
-          ip,
-          NUMBER_ASOZ,
-          when_Changed,
-          when_Created,
-          id_Admin_Changed,
-          id_Admin_Created
+        user_id
+        , input_user_id
+        , last_name
+        , first_name
+        , midle_name
+        , email
+        , phone
+        , company
+        , department
+        , title
+        , time_before
+        , ip
+        , NUMBER_ASOZ
+        , when_Changed
+        , when_Created
+        , creator
+        , editor
+        , creator_ip
+        , editor_ip
       )
       VALUES
       (
-        #{id},
-        #{lastName},
-        #{firstName},
-        #{patronymicName},
-        #{email},
-        #{phone},
-        #{company},
-        #{department},
-        #{title},
-        #{timeBefore},
-        #{ip},
-        #{numberASOZ},
-        current_timestamp ,
-        current_timestamp ,
-        #{idAdminChanged},
-        #{idAdminCreated}
+        #{id}
+        , #{inputUserId}
+        , #{lastName}
+        , #{firstName}
+        , #{patronymicName}
+        , #{email}
+        , #{phone}
+        , #{company}
+        , #{department}
+        , #{title}
+        , #{timeBefore}
+        , #{ip}
+        , #{numberASOZ}
+        , current_timestamp
+        , current_timestamp
+        , #{creator}
+        , #{editor}
+        , #{creatorIP}
+        , #{editorIP}
 
       )
     </insert>

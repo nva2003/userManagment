@@ -5,22 +5,22 @@
 <body>
 
 <th:block layout:fragment="poststyle">
-    <!--    <link rel="stylesheet" type="text/css" media="all" href="../../../webapp/css/bootstrap.min2.css"/> -->
+    <script type="text/javascript" src="../../../webapp/js/bootstrap-confirmation.min.js"  th:src=@{/js/bootstrap-confirmation.min.js}></script>
 </th:block>
 
 <div layout:fragment="content">
   
   
-    <h2>user Information</h2>
+    <h2>Информация о пользователе</h2>
   
   
     <table class="table table-striped" th:object="${user}">
       <tr>
-        <th>Name</th>
+        <th>ФИО</th>
         <td><b th:text="*{lastName + ' ' + firstName+ ' ' + patronymicName}"></b></td>
       </tr>
       <tr>
-        <th>email</th>
+        <th>E-mail</th>
         <td th:text="*{email}" /></td>
       </tr>
       <tr>
@@ -28,61 +28,103 @@
         <td th:text="*{company}" /></td>
       </tr>
       <tr>
-        <th>Telephone</th>
+        <th>Телефон</th>
         <td th:text="*{phone}" /></td>
       </tr>
     </table>
   
-    <a th:href="@{{id}/edit(id=${user.id})}" class="btn btn-default">Edit
+    <a th:href="@{/users/{id}/edit(id=${user.id})}" class="btn btn-default"  th:text="#{btn.user.edit}">Edit
       user</a>
-    <a th:href="@{{id}/logins/new(id=${user.id})}" class="btn btn-default">Add
+    <a th:href="@{/users/{id}/logins/new(id=${user.id})}" class="btn btn-default" th:text="#{login.btn.new}">Add
       New Login</a>
   
     <br />
     <br />
     <br />
-    <h2>Logins and Groups</h2>
-<!--
+    <h2>Логины и Роли</h2>
+
     <table class="table table-striped">
+
   
       <tr th:each="login : ${user.logins}">
-        <td valign="top">
-          <dl class="dl-horizontal">
-            <dt>Name</dt>
-            <dd th:text="${login.name}" /></dd>
-            <dt>Birth Date</dt>
-            <dd
-              th:text="${#calendars.format(login.birthDate, 'yyyy-MM-dd')}" /></dd>
-            <dt>Type</dt>
-            <dd th:text="${login.type}" /></dd>
-          </dl>
-        </td>
-        <td valign="top">
-          <table class="table-condensed">
-            <thead>
-              <tr>
-                <th>group Date</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tr th:each="group : ${login.groups}">
-              <td th:text="${#calendars.format(group.date, 'yyyy-MM-dd')}"></td>
-              <td th:text="${group?.description}"></td>
-            </tr>
-            <tr>
-              <td><a
-                th:href="@{{userId}/logins/{loginId}/edit(userId=${user.id},loginId=${login.id})}">Edit
-                  Login</a></td>
-              <td><a
-                th:href="@{{userId}/logins/{loginId}/groups/new(userId=${user.id},loginId=${login.id})}">Add
-                  Group</a></td>
-            </tr>
-          </table>
-        </td>
+
+          <td valign="top">
+                    <dl class="dl-horizontal">
+                      <dt>Логин</dt>
+                      <dd th:text="${login.userName}" /></dd>
+                      <dt title="Время действия логина">Время действия логина</dt>
+                      <dd
+                        th:text="${#calendars.format(login.passwordExpirationTime, 'yyyy-MM-dd')}" /></dd>
+
+                    </dl>
+          </td>
+          <td>
+              <a th:href="@{/users/{userId}/logins/{loginId}/delete(userId=${user.id},loginId=${login.id})}"  class="text-danger" data-toggle="confirmation" ><span class="glyphicon glyphicon-remove">Удалить логин</span></a>
+          </td>
+          <td>
+              <a href="mailto:*{email}?subject=Ваш логин&body=Ваш логин:1 пароль:2"
+                 th:href="'mailto:'+ ${user.email} + '?subject=' + ${systemName} + '&body=Ваш логин : ' + ${login.userName} + ' пароль : ' + ${login.password}"
+              >
+                  Отправить пользователю
+              </a>
+          </td>
+          <td valign="top">
+              <table class="table-condensed">
+                  <thead>
+                  <tr>
+                      <th>Роль</th>
+                      <th>Описание</th>
+                      <th></th>
+                  </tr>
+                  </thead>
+                  <tr th:each="role : ${login.roles}">
+                      <td th:text="${role.roleName}">roleName</td>
+                      <td th:text="${role.description}">description</td>
+                      <td>
+                          <a href="#" th:href="@{/roles/__${role.id}__/delete/__${user.id}__(userId=${user.id},roleId=${role.id})}" class="text-danger" data-toggle="unbind">
+                              <span class="glyphicon glyphicon-remove"></span>
+                          </a>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td><a
+                              th:href="@{/users/{userId}/logins/{loginId}/edit(userId=${user.id},loginId=${login.id})}">Редактировать логин</a></td>
+                      <td>
+                          <a
+                              th:href="@{/users/{userId}/logins/{loginName}/roles/binding(userId=${user.id},loginName=${login.userName})}">Добавить роль</a>
+                      </td>
+                      <td></td>
+                  </tr>
+              </table>
+          </td>
+
       </tr>
   
     </table>
-    -->
+
+    <script>
+        //Enable confirmations
+        $('[data-toggle=confirmation]').confirmation({
+            rootSelector: '[data-toggle=confirmation]',
+            btnOkLabel: 'Да',
+            btnCancelLabel: 'Нет',
+            title: 'Удалить логин?'
+
+            // other options
+        });
+
+        $('[data-toggle=unbind]').confirmation({
+            rootSelector: '[data-toggle=unbind]',
+            btnOkLabel: 'Да',
+            btnCancelLabel: 'Нет',
+            title: 'Отвязать?'
+
+            // other options
+        });
+    </script>
+
+
+
 </div>
   </body>
 

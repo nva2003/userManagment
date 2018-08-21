@@ -8,6 +8,7 @@
         <result property="userName" column="user_Name"/>
         <result property="roleName" column="role_Name"/>
         <result property="description" column="description"/>
+        <result property="systemId" column="system_id"/>
     </resultMap>
 
 
@@ -22,40 +23,166 @@
       WHERE role_id=#{id}
     </select>
 
-    <select id="searchList"  resultMap="userRoleMap" parameterType="rzd.pktbcki.user.UserRole">
-      SELECT
-        role_id,
-          user_Name,
-          role_Name,
-          description
-      FROM
-        ${schemeUSER_ROLES}USER_ROLES
-        <where>
-          <if test="lastName != null and lastName != ''">
-              last_name = #{lastName}
-          </if>
-          <if test="firstName != null and firstName != ''">
-              AND first_name like #{firstName}
-          </if>
-        </where>
-    </select>
+    <select id="findAllRoles" resultMap="userRoleMap" parameterType="rzd.pktbcki.user.UserRole">
 
-    <select id="findAllRoles" resultMap="userRoleMap">
+        <![CDATA[
       SELECT DISTINCT
             role_Name,
             description
       FROM
         ${schemeUSER_ROLES}USER_ROLES
+              where
+               system_id = #{systemId}
+               and role_name <> #{roleName}
+               ]]>
     </select>
 
-    <select id="findAll" resultMap="userRoleMap">
-      SELECT
-            role_id,
-            user_Name,
-            role_Name,
-            description
+    <select id="findLoginRoles" resultMap="userRoleMap" parameterType="Map">
+      SELECT DISTINCT
+            ROLES.role_Name
+            ,ROLES.description
+            ,ROLES.user_name
       FROM
-        ${schemeUSER_ROLES}USER_ROLES
+          ${schemeUSER_ROLES}USER_ROLES ROLES
+        <where>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName}
+            </if>
+            <if test="userName != null and userName != ''">
+                role_name = #{roleName}
+            </if>
+            <if test="systemId != null and systemId != ''">
+              and system_id = #{systemId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findRole" resultMap="userRoleMap" parameterType="rzd.pktbcki.user.UserRole">
+      SELECT DISTINCT
+            ROLES.role_Name
+            ,ROLES.description
+            ,ROLES.user_name
+      FROM
+          ${schemeUSER_ROLES}USER_ROLES ROLES
+        <where>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName}
+            </if>
+            <if test="roleName != null and roleName != ''">
+                and role_name = #{roleName}
+            </if>
+            <if test="systemId != null and systemId != ''">
+                and system_id = #{systemId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findRolesForLogin" resultMap="userRoleMap" parameterType="Map">
+        SELECT DISTINCT
+          role_name
+          ,description
+          ,user_name
+          ,system_id
+        FROM
+          ${schemeUSER_ROLES}USER_ROLES
+          WHERE
+            user_name = #{userName}
+            <if test="systemId != null and systemId != ''">
+            and system_id = #{systemId}
+            </if>
+            <if test="adminRoleName != null and adminRoleName != ''">
+                <![CDATA[
+             and role_name <> #{adminRoleName}
+                ]]>
+            </if>
+        UNION ALL
+        SELECT DISTINCT
+          role_name
+          ,description
+          , NULL
+          ,system_id
+        FROM
+          ${schemeUSER_ROLES}USER_ROLES
+          WHERE
+            <![CDATA[
+            user_name <> #{userName}
+            ]]>
+            AND role_name NOT IN
+              (
+                SELECT
+                  role_name
+                FROM
+                  ${schemeUSER_ROLES}USER_ROLES
+                    WHERE user_name = #{userName}
+                    <if test="systemId != null and systemId != ''">
+                    and system_id = #{systemId}
+                    </if>
+                    <if test="adminRoleName != null and adminRoleName != ''">
+                        <![CDATA[
+                     and role_name <> #{adminRoleName}
+                        ]]>
+                    </if>
+               )
+                <if test="systemId != null and systemId != ''">
+                and system_id = #{systemId}
+                </if>
+                <if test="adminRoleName != null and adminRoleName != ''">
+                    <![CDATA[
+                 and role_name <> #{adminRoleName}
+                    ]]>
+                </if>
+
+    </select>
+
+    <select id="DEPRECATEDfindRolesForLogin" resultMap="userRoleMap" parameterType="Map">
+
+      SELECT
+            ROLES.role_Name
+            ,ROLES.description
+            ,LOGINS.user_name as user_name
+      FROM
+        (
+            SELECT DISTINCT
+                  role_Name,
+                  description
+            FROM
+              ${schemeUSER_ROLES}USER_ROLES
+            <where>
+              <if test="systemId != null and systemId != ''">
+                  system_id = #{systemId}
+              </if>
+              <if test="adminRoleName != null and adminRoleName != ''">
+                  <![CDATA[
+                  and role_name <> #{adminRoleName}
+                  ]]>
+              </if>
+            </where>
+        )  ROLES
+
+      left outer join
+        (
+            SELECT
+              user_name
+              ,role_Name
+            FROM
+            ${schemeUSER_ROLES}USER_ROLES
+            <where>
+                <if test="userName != null and userName != ''">
+                  user_name = #{userName}
+                </if>
+                <if test="systemId != null and systemId != ''">
+                 and system_id = #{systemId}
+                </if>
+                <if test="adminRoleName != null and adminRoleName != ''">
+                    <![CDATA[
+                    and role_name <> #{adminRoleName}
+                    ]]>
+                </if>
+            </where>
+        ) LOGINS
+        on
+        ROLES.role_Name = LOGINS.role_Name
+
     </select>
 
 
@@ -67,20 +194,31 @@
         where role_id = #{ID}
     </delete>
 
-    <delete id="deleteByRoleName" parameterType="java.lang.String">
+    <delete id="deleteByRoleName" parameterType="Map">
         delete
         from
         ${schemeUSER_ROLES}USER_ROLES
         where role_Name = #{roleName}
+         and system_id = #{systemId}
+
     </delete>
 
-    <update id="update" parameterType="rzd.pktbcki.user.UserRole">
-      UPDATE ${schemeUSER_ROLES}USER_ROLES SET
+    <delete id="deleteByUserName" parameterType="Map">
+        delete
+        from
+        ${schemeUSER_ROLES}USER_ROLES
+        where user_Name = #{userName}
+         and system_id = #{systemId}
 
-        role_Name = #{roleName},
-        description = #{description}
+    </delete>
 
-    </update>
+    <delete id="deleteByLogin" parameterType="rzd.pktbcki.user.UserRole">
+        delete
+        from
+        ${schemeUSER_ROLES}USER_ROLES
+        where user_name = #{userName}
+        and system_id = #{systemId}
+    </delete>
 
     <insert id="insert" parameterType="rzd.pktbcki.user.UserRole">
       INSERT INTO ${schemeUSER_ROLES}USER_ROLES
@@ -88,14 +226,74 @@
                 role_id,
             user_Name,
             role_Name,
-            description
+            description,
+            when_created
+        ,when_Changed
+        ,system_id
+        , creator
+        , editor
+        , creator_ip
+        , editor_ip
       )
       VALUES
       (
-        #{id},
-        #{userName},
-        #{roleName},
-        #{description}
+        #{id}
+        ,#{userName}
+        ,#{roleName}
+        ,#{description}
+        ,current_timestamp
+        ,current_timestamp
+        <choose>
+          <when test="systemId != null">
+              ,#{systemId}
+          </when>
+          <otherwise>
+              ,0
+          </otherwise>
+        </choose>
+        , #{creator}
+        , #{editor}
+        , #{creatorIP}
+        , #{editorIP}
+      )
+    </insert>
+
+    <insert id="insertLoginWithRole" parameterType="Map">
+      INSERT INTO ${schemeUSER_ROLES}USER_ROLES
+      (
+        role_id
+        ,user_Name
+        ,role_Name
+        ,description
+        ,when_created
+        ,when_Changed
+        ,system_id
+        , creator
+        , editor
+        , creator_ip
+        , editor_ip
+      )
+      VALUES
+      (
+        #{id}
+        ,#{userName}
+        ,#{roleName}
+        ,#{description}
+        ,current_timestamp
+        ,current_timestamp
+        <choose>
+          <when test="systemId != null">
+              ,#{systemId}
+          </when>
+          <otherwise>
+              ,0
+          </otherwise>
+        </choose>
+        , #{creator}
+        , #{editor}
+        , #{creatorIP}
+        , #{editorIP}
+
       )
     </insert>
 </mapper>

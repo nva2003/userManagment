@@ -1,8 +1,9 @@
 <!doctype html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"  xmlns:th="http://www.thymeleaf.org">
 
-  <head>
-
+<head>
+    <meta http-equiv=pragma content=no-cache>
+    <meta http-equiv="cache-control" content="no-store">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,84 +11,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-      <title th:text="#{title.list}">application</title>
+    <title th:text="#{title.list}">application</title>
 
 
     <link rel="stylesheet" type="text/css" media="all" href="../../../webapp/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}"/>
     <link rel="stylesheet" type="text/css" media="all" href="../../../webapp/css/bootstrap-theme.min.css" th:href="@{/css/bootstrap-theme.min.css}"/>
+<!--    <link rel="stylesheet" type="text/css" media="all" href="../../../webapp/css/jquery-ui.min.css" th:href="@{/css/jquery-ui.min.css}"/>-->
 
-      <div layout:fragment="poststyle"></div>
-  </head>
+<!--    <script src="../../../webapp/js/jquery-3.3.1.min.js" th:src=@{/js/jquery-3.3.1.min.js}></script>-->
+<!--    <script src="../../../webapp/js/jquery-ui-1.12.1.js" th:src=@{/js/jquery-ui-1.12.1.min.js}></script>-->
+    <script src="../../../webapp/js/jquery-1.11.1.min.js" th:src=@{/js/jquery-1.11.1.min.js}></script>
+    <script src="../../../webapp/js/bootstrap.min.js" th:src=@{/js/bootstrap.min.js}></script>
+
+
+
+    <div layout:fragment="poststyle"></div>
+</head>
 
 <body>
 
-  <nav class="navbar navbar-default" role="navigation">
-      <div class="container">
-          <div class="navbar-header">
-              <a class="navbar-brand" th:href="@{/}"><span></span></a>
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
-                  <span class="sr-only"><os-p>Toggle navigation</os-p></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-              </button>
-          </div>
-          <div class="navbar-collapse collapse" id="main-navbar">
-              <ul class="nav navbar-nav navbar-right">
-  
-                  <li th:fragment="menuItem (path,active,title,glyph,text)" class="active" th:class="${active==menu ? 'active' : ''}">
-                      <a th:href="@{__${path}__}"  th:title="${title}">
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" th:href="@{/}"><span></span></a>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+                <span class="sr-only"><os-p>Toggle navigation</os-p></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse" id="main-navbar">
+            <ul class="nav navbar-nav navbar-right">
+
+                <li th:fragment="menuItem (path,active,title,glyph,text)" class="active" th:class="${active==menu ? 'active' : ''}">
+                    <a th:href="@{__${path}__}"  th:title="${title}">
                         <span th:class="'glyphicon  glyphicon-'+${glyph}" class="glyphicon glyphicon-home" aria-hidden="true"></span>
                         <span th:text="${text}">Template</span>
-                      </a>
-                  </li>
-  
-                  <li th:replace="::menuItem ('/','home','home page','home','Home')">
-                      <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
-                      <span>Home</span>
-                  </li>
-  
-                  <li th:replace="::menuItem ('/users','user list','user list','th-list','user list')">
-                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                      <span>user list</span>
-                  </li>
+                    </a>
+                </li>
 
-                  <li th:replace="::menuItem ('/users/find','find users','find users','search','Find users')">
-                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                      <span>Find users</span>
-                  </li>
+                <li th:replace="::menuItem ('/','home','home page','home','Home')">
+                    <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+                    <span>Home</span>
+                </li>
 
-                  <li th:replace="::menuItem ('/users/new','add user','add user','plus','add user')">
-                      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                      <span>Add user</span>
-                  </li>
+                <li th:replace="::menuItem ('/users','user list','user list','th-list',#{title.list})">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    <span>user list</span>
+                </li>
 
-                  <li th:replace="::menuItem ('/groups','groups','groups','th-list','groups')">
-                      <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-                      <span>groups</span>
-                  </li>
+                <li th:replace="::menuItem ('/users/find','find users','find users','search',#{btn.user.find})">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    <span>Find users</span>
+                </li>
 
-                  <li th:replace="::menuItem ('/groups/new','add group','add group','plus','add group')">
-                      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                      <span>Add group</span>
-                  </li>
+                <li th:replace="::menuItem ('/users/new','add user',#{btn.user.new},'plus',#{btn.user.add})">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    <span>Add user</span>
+                </li>
 
-  
-              </ul>
-          </div>
-      </div>
-  </nav>
-  <div class="container-fluid">
-      <div class="container xd-container">
+                <li th:replace="::menuItem ('/roles','roles','roles','th-list',#{role.btn.roles})">
+                    <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                    <span>roles</span>
+                </li>
 
-          <div layout:fragment="content"></div>
+                <li th:replace="::menuItem ('/roles/new','add role','add role','plus',#{role.btn.add})">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    <span>Add role</span>
+                </li>
 
 
-      </div>
-  </div>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="container xd-container">
 
-  <script src="../../../webapp/js/jquery-1.11.1.min.js" th:src=@{/js/jquery-1.11.1.min.js}></script>
-  <script src="../../../webapp/js/bootstrap.min.js" th:src=@{/js/bootstrap.min.js}></script>
+        <div layout:fragment="content"></div>
+
+
+    </div>
+</div>
+
 
 
 

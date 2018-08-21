@@ -27,6 +27,8 @@ public class User extends BaseEntity {
     ============================================*/
 
     @NotEmpty
+    private String inputUserId;
+    @NotEmpty
     private String lastName;
     @NotEmpty
     private String firstName;
@@ -44,15 +46,17 @@ public class User extends BaseEntity {
     private String title;
 
     @NotEmpty
-    private String timeBefore;
+    private Timestamp timeBefore;
     @NotEmpty
     private String ip;
     @NotEmpty
     private String numberASOZ;
     private Timestamp whenChanged;
     private Timestamp whenCreated;
-    private Integer idAdminChanged;
-    private Integer idAdminCreated;
+    private String creator;
+    private String editor;
+    private String creatorIP;
+    private String editorIP;
 
     private Set<Login> logins;
 
@@ -163,11 +167,11 @@ public class User extends BaseEntity {
         this.title = title;
     }
 
-    public String getTimeBefore() {
+    public Timestamp getTimeBefore() {
         return timeBefore;
     }
 
-    public void setTimeBefore(String timeBefore) {
+    public void setTimeBefore(Timestamp timeBefore) {
         this.timeBefore = timeBefore;
     }
 
@@ -203,20 +207,28 @@ public class User extends BaseEntity {
         this.whenCreated = whenCreated;
     }
 
-    public Integer getIdAdminChanged() {
-        return idAdminChanged;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setIdAdminChanged(Integer idAdminChanged) {
-        this.idAdminChanged = idAdminChanged;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
-    public Integer getIdAdminCreated() {
-        return idAdminCreated;
+    public String getEditor() {
+        return editor;
     }
 
-    public void setIdAdminCreated(Integer idAdminCreated) {
-        this.idAdminCreated = idAdminCreated;
+    public void setEditor(String editor) {
+        this.editor = editor;
+    }
+
+    public String getInputUserId() {
+        return inputUserId;
+    }
+
+    public void setInputUserId(String inputUserId) {
+        this.inputUserId = inputUserId;
     }
 
     public Set<Login> getLogins() {
@@ -227,6 +239,22 @@ public class User extends BaseEntity {
         this.logins = logins;
     }
 
+    public String getCreatorIP() {
+        return creatorIP;
+    }
+
+    public void setCreatorIP(String creatorIP) {
+        this.creatorIP = creatorIP;
+    }
+
+    public String getEditorIP() {
+        return editorIP;
+    }
+
+    public void setEditorIP(String editorIP) {
+        this.editorIP = editorIP;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -235,13 +263,12 @@ public class User extends BaseEntity {
         User user = (User) o;
 
         if (company != null ? !company.equals(user.company) : user.company != null) return false;
+        if (creator != null ? !creator.equals(user.creator) : user.creator != null) return false;
         if (department != null ? !department.equals(user.department) : user.department != null) return false;
+        if (editor != null ? !editor.equals(user.editor) : user.editor != null) return false;
         if (email != null ? !email.equals(user.email) : user.email != null) return false;
         if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
-        if (idAdminChanged != null ? !idAdminChanged.equals(user.idAdminChanged) : user.idAdminChanged != null)
-            return false;
-        if (idAdminCreated != null ? !idAdminCreated.equals(user.idAdminCreated) : user.idAdminCreated != null)
-            return false;
+        if (inputUserId != null ? !inputUserId.equals(user.inputUserId) : user.inputUserId != null) return false;
         if (ip != null ? !ip.equals(user.ip) : user.ip != null) return false;
         if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
         if (logins != null ? !logins.equals(user.logins) : user.logins != null) return false;
@@ -259,7 +286,8 @@ public class User extends BaseEntity {
 
     @Override
     public int hashCode() {
-        int result = lastName != null ? lastName.hashCode() : 0;
+        int result = inputUserId != null ? inputUserId.hashCode() : 0;
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
         result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
         result = 31 * result + (patronymicName != null ? patronymicName.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
@@ -272,8 +300,8 @@ public class User extends BaseEntity {
         result = 31 * result + (numberASOZ != null ? numberASOZ.hashCode() : 0);
         result = 31 * result + (whenChanged != null ? whenChanged.hashCode() : 0);
         result = 31 * result + (whenCreated != null ? whenCreated.hashCode() : 0);
-        result = 31 * result + (idAdminChanged != null ? idAdminChanged.hashCode() : 0);
-        result = 31 * result + (idAdminCreated != null ? idAdminCreated.hashCode() : 0);
+        result = 31 * result + (creator != null ? creator.hashCode() : 0);
+        result = 31 * result + (editor != null ? editor.hashCode() : 0);
         result = 31 * result + (logins != null ? logins.hashCode() : 0);
         return result;
     }

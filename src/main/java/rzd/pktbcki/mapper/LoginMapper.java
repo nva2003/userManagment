@@ -11,15 +11,10 @@ import java.util.Map;
  * Time: 18:13
  */
 public interface LoginMapper {
-    Login getLogin(Integer userId);
     Login findById(Integer userId);
-//    Login findOne(Integer id);
    	List<Login> findAll();
-   	boolean exists(Integer id);
    	boolean deleteById(Integer id);
-   	long count();
     List<Login> searchLoginList(Login user);
-    List<Login> searchLoginList(Map map);
     void update(Login login);
     void insert(Login login);
 

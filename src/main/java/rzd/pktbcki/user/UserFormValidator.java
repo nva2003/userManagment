@@ -35,15 +35,16 @@ public class UserFormValidator implements Validator {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName","NotEmpty.userForm", "не может быть пусто");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "patronymicName", "NotEmpty.userForm", "не может быть пусто");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.userForm", "не может быть пусто");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone", "NotEmpty.userForm", "не может быть пусто");
+//		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone", "NotEmpty.userForm", "не может быть пусто");
 //		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.userForm.password");
 //		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword","NotEmpty.userForm.confirmPassword");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "company", "NotEmpty.userForm", "не может быть пусто");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "department", "NotEmpty.userForm", "не может быть пусто");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "NotEmpty.userForm", "не может быть пусто");
+//		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "department", "NotEmpty.userForm", "не может быть пусто");
+//		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "NotEmpty.userForm", "не может быть пусто");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "timeBefore", "NotEmpty.userForm", "не может быть пусто");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "ip", "NotEmpty.userForm", "не может быть пусто");
+//		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "ip", "NotEmpty.userForm", "не может быть пусто");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "numberASOZ", "NotEmpty.userForm", "не может быть пусто");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "inputUserId", "NotEmpty.userForm", "не может быть пусто");
 
 		if(!emailValidator.valid(user.getEmail())){
 			errors.rejectValue("email", "Pattern.userForm.email");

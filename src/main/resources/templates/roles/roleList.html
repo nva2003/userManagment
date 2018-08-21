@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html   xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{fragments/layout }">
+
+<body>
+
+<th:block layout:fragment="poststyle">
+    <!--    <link rel="stylesheet" type="text/css" media="all" href="../../../webapp/css/bootstrap.min2.css"/> -->
+    <script type="text/javascript" src="../../../webapp/js/bootstrap-confirmation.min.js"  th:src=@{/js/bootstrap-confirmation.min.js}></script>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div>
+                        <a  class="btn btn-primary"  th:href="@{/roles/new}"  th:text="#{role.btn.new}">Add New Role</span></a>
+                    </div>
+                    <div>
+                        <h2>Список ролей</b></h2>
+                    </div>
+                </div>
+                <div>
+                    <input class="form-control" id="searchInput" type="text" placeholder="Поиск..">
+                </div>
+            </div>
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Роль</th>
+                    <th>Описание</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody  id="rolesTable">
+                <tr th:each="role,itrStat : ${selections}">
+                    <td th:text="${itrStat.index} ">1</td>
+                    <td th:text="${role.roleName}"> Michael Holz</td>
+                    <td th:text="${role.description}"> Michael Holz</td>
+                    <td>
+                        <a href="#" th:href="@{/roles/__${role.roleName}__/delete}" class="btn btn-info btn-sm" data-toggle="confirmation"  data-title="Удалить?" data-btn-ok-label="Да" data-btn-cancel-label="Нет">
+                            <span class="glyphicon glyphicon-remove-sign"></span> <span  th:text="#{btn.delete}">Remove</span>
+                        </a>
+                    </td>
+
+                </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+
+
+        <script>
+            //init search
+            $(document).ready(function(){
+                $("#searchInput").on("keyup", function() {
+                    var value = $(this).val().toLowerCase();
+                    $("#rolesTable tr").filter(function() {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
+                });
+            });
+
+
+            //Enable confirmations
+            $('[data-toggle=confirmation]').confirmation({
+              rootSelector: '[data-toggle=confirmation]'
+              // other options
+            });
+        </script>
+
+    </div>
+</div>
+
+</body>
+</html>                                		                            

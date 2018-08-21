@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html   xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{fragments/layout }">
+
+<body>
+
+<th:block layout:fragment="poststyle">
+    <!--    <link rel="stylesheet" type="text/css" media="all" href="../../../webapp/css/bootstrap.min2.css"/> -->
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container">
+        <form th:object="${userRole}"  id="add-group-form" class="form-horizontal" method="post">
+            <div class="row">
+                <div class="col-sm-12">
+                    <input th:replace="~{fragments/inputField :: input ('Роль', 'roleName', 'text')}" />
+                </div>
+                <div class="col-sm-12">
+                    <input th:replace="~{fragments/inputField :: input ('Описание', 'description', 'text')}" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="pull-right">
+                        <button class="btn btn-lg btn-info" type="submit">Сохранить</button>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <a href="#" th:href="@{/roles}" class="btn  btn-lg btn-info">
+                        <span  th:text="#{btn.cancel}">Отмена</span>
+                    </a>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

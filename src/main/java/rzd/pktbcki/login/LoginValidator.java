@@ -15,9 +15,13 @@
  */
 package rzd.pktbcki.login;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import rzd.pktbcki.user.EmailValidator;
 import rzd.pktbcki.user.Login;
 
 /**
@@ -26,12 +30,18 @@ import rzd.pktbcki.user.Login;
  * We're not using Bean Validation annotations here because it is easier to define such validation rule in Java.
  * </p>
  *
- * @author Ken Krebs
- * @author Juergen Hoeller
  */
+@Component
 public class LoginValidator implements Validator {
 
     private static final String REQUIRED = "Обязательно";
+
+    @Autowired
+    @Qualifier("passwordValidator")
+    PasswordValidator passwordValidator;
+
+
+
 
     @Override
     public void validate(Object obj, Errors errors) {
@@ -47,11 +57,30 @@ public class LoginValidator implements Validator {
             errors.rejectValue("password", REQUIRED, REQUIRED);
         }
 
+        if(!passwordValidator.valid(login.getPassword())){
+      			errors.rejectValue("password", null, "пароль должен содержать не менее 8 символов");
+      			errors.rejectValue("password", null, "пароль должен содержать символы как минимум 3-х видов из  следующих подмножеств: ");
+      			errors.rejectValue("password", null, "A-Z (буквы в верхнем регистре)");
+      			errors.rejectValue("password", null, "a-z (буквы в нижнем регистре)");
+      			errors.rejectValue("password", null, "0-9 (цифры)");
+
+      		}
+
+
 
         // userId date validation
         if (login.getUserId() == null) {
             errors.rejectValue("userId", REQUIRED, REQUIRED);
         }
+
+/*
+        // password matching validation
+          if (!student.getPassword().equals(student.getConfirmPassword())) {
+           errors.rejectValue("confirmPassword", "password.mismatch",
+             "Password does not match");
+          }
+*/
+
     }
 
     /**

@@ -1,0 +1,68 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rzd.pktbcki.mapper.SystemMapper">
+
+    <resultMap id="systemMap"  type="rzd.pktbcki.system.ApplicationSystem">
+        <id  property="systemId" column="system_id"/>
+        <result property="systemName" column="system_name"/>
+        <result property="auditId" column="audit_id"/>
+
+
+
+    </resultMap>
+
+
+    <select id="findById" resultMap="systemMap"  parameterType="java.lang.Integer">
+      SELECT
+           system_id  
+           ,system_name 
+           ,audit_id   
+         FROM
+        ${schemeSYSTEMS}SYSTEMS
+      WHERE system_id=#{systemId}
+    </select>
+
+
+
+
+    <select id="isExist" parameterType="rzd.pktbcki.system.ApplicationSystem" resultType="Integer">
+        select 1
+        from
+        ${schemeSYSTEMS}SYSTEMS
+        where system_id = #{systemId}
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete
+        from
+        ${schemeSYSTEMS}SYSTEMS
+        where system_id = #{systemId}
+    </delete>
+
+
+    <update id="update" parameterType="rzd.pktbcki.system.ApplicationSystem">
+      UPDATE ${schemeSYSTEMS}SYSTEMS SET
+
+        audit_id = #{auditId}
+        ,system_name = #{systemName}
+        where system_id = #{systemId}
+
+    </update>
+
+    <!--add table systems-->
+    <insert id="insert" parameterType="rzd.pktbcki.system.ApplicationSystem">
+      INSERT INTO ${schemeSYSTEMS}SYSTEMS
+      (
+          system_id
+          ,system_name
+          ,audit_id
+      )
+      VALUES
+      (
+          #{systemId},
+          #{systemName},
+          #{auditId}
+      )
+    </insert>
+</mapper>

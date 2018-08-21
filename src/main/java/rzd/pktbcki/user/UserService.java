@@ -1,17 +1,18 @@
 package rzd.pktbcki.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rzd.pktbcki.login.LoginService;
+import rzd.pktbcki.mapper.LoginMapper;
 import rzd.pktbcki.mapper.UserMapper;
+import rzd.pktbcki.mapper.UserRoleMapper;
 
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * User: VNikishin
@@ -46,7 +47,11 @@ private static final Logger logger = LoggerFactory.getLogger( UserService.class 
     ============================================*/
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private LoginService loginService;
 
+    @Value("${application.system.id}")
+    private Integer systemId;
 
     /*--------------------------------------------
     |         C O N S T R U C T O R S           |
@@ -71,13 +76,39 @@ private static final Logger logger = LoggerFactory.getLogger( UserService.class 
         return  userMapper.findUserById(id);
     }
 
+    /**
+     * Retrieve an {@link User} from the data store by id.
+     * @param id the id to search for
+     * @return the {@link User} if found
+     */
+    @Transactional(readOnly = true)
+    public User findByIdWithLogin( Integer id){
+//        User user =  userMapper.findUserByIdWithLoginAndRoles(id);
+//        User user =  userMapper.findUserByIdWithLogin(id);
+//        return user;
+//        return  userMapper.findUserByIdWithLogin(id);
+        Map map =  new HashMap();
+        map.put("userId", id);
+        map.put("systemId",systemId);
+        return  userMapper.findUserByIdWithLoginAndRoles(map);
+    }
+
+    public User findByIdWithLogin( Integer id, boolean isAllSystem){
+
+        if (isAllSystem){
+            Map map =  new HashMap();
+            map.put("userId", id);
+            return  userMapper.findUserByIdWithLoginAndRoles(map);
+        } else {
+            return this.findByIdWithLogin(id);
+        }
+
+    }
+
     public List<User> getUser(User user) {
       return userMapper.searchUserList(user);
     }
 
-    public List<User> getUser(Map map) {
-      return userMapper.searchUserList(map);
-    }
 
     /**
       * Delete user.
@@ -85,7 +116,12 @@ private static final Logger logger = LoggerFactory.getLogger( UserService.class 
       * @param id the user_id
       */
     public void deleteUser(Integer id) {
+        User user = this.findByIdWithLogin(id, true);
+        for (Login login : user.getLogins()) {
+            loginService.deleteLogin(login.getId());
+        }
         userMapper.deleteUser(id);
+
     }
 
 
@@ -95,19 +131,10 @@ private static final Logger logger = LoggerFactory.getLogger( UserService.class 
     * @param account the User account
     */
      @Transactional
-     public void insertUser(User user) {
-
-         Integer uniqueID = UUID.randomUUID().hashCode();
-//         Integer uniqueID = UUID.randomUUID().clockSequence();
-
-
-         user.setId(uniqueID);
-         user.setIdAdminChanged(uniqueID);
-         user.setIdAdminCreated(uniqueID);
+     public User insertUser(User user) {
 
        userMapper.insertUser(user);
-//       loginMapper.insertProfile(user);
-//       userRoleMapper.insertSignon(user);
+         return userMapper.getUser(user);
      }
 
         /*
@@ -120,12 +147,15 @@ private static final Logger logger = LoggerFactory.getLogger( UserService.class 
      @Transactional
      public void updateUser(User user) {
          userMapper.updateUser(user);
-//       loginMapper.updateProfile(user);
 
-/*
-       if (user.getPassword() != null && user.getPassword().length() > 0) {
-         accountMapper.updateSignon(user);
-       }
-*/
+         User userWithLogin = this.findByIdWithLogin(user.getId());
+         for (Login login : userWithLogin.getLogins()) {
+             login.setPasswordExpirationTime(user.getTimeBefore());
+             login.setEditor(user.getEditor());
+             login.setEditorIP(user.getEditorIP());
+             loginService.updateLogin(login);
+         }
+
+
      }
 }

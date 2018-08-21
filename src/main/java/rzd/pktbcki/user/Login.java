@@ -3,6 +3,10 @@ package rzd.pktbcki.user;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Set;
 
 /**
@@ -26,19 +30,26 @@ public class Login extends BaseEntity{
     private String userName;
     private String password;
     private Integer userId;
+    private Integer systemId;
     //    Флаг: пароль является начальным (=установил администратор)
     private boolean passwordInitial;
     //Дата: пароль установлен администратором заново
 //    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private String passwordDateSet;
+    private Timestamp passwordDateSet;
     //Изменение пароля: необходимо / разрешено / невозможно
     private Integer passwordState;
     //Время действия логина
-    private String timeBefore;
+    private Timestamp passwordExpirationTime;
+    private String creator;
+    private String editor;
+    private String creatorIP;
+    private String editorIP;
 
     private Set<UserRole> roles;
 
     private User user;
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     /*--------------------------------------------
     |         C O N S T R U C T O R S           |
     ============================================*/
@@ -48,8 +59,12 @@ public class Login extends BaseEntity{
     |               M E T H O D S               |
     ============================================*/
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
+    public Integer getSystemId() {
+        return systemId;
+    }
+
+    public void setSystemId(Integer systemId) {
+        this.systemId = systemId;
     }
 
     public String getUserName() {
@@ -84,13 +99,7 @@ public class Login extends BaseEntity{
         this.passwordInitial = passwordInitial;
     }
 
-    public String getPasswordDateSet() {
-        return passwordDateSet;
-    }
 
-    public void setPasswordDateSet(String passwordDateSet) {
-        this.passwordDateSet = passwordDateSet;
-    }
 
     public Integer getPasswordState() {
         return passwordState;
@@ -100,12 +109,24 @@ public class Login extends BaseEntity{
         this.passwordState = passwordState;
     }
 
-    public String getTimeBefore() {
-        return timeBefore;
+    public Timestamp getPasswordDateSet() {
+        return passwordDateSet;
     }
 
-    public void setTimeBefore(String timeBefore) {
-        this.timeBefore = timeBefore;
+    public void setPasswordDateSet(Timestamp passwordDateSet) {
+        this.passwordDateSet = passwordDateSet;
+    }
+
+    public Timestamp getPasswordExpirationTime() {
+        return passwordExpirationTime;
+    }
+
+    public void setPasswordExpirationTime(Timestamp passwordExpirationTime) {
+        this.passwordExpirationTime = passwordExpirationTime;
+    }
+
+    public void setPasswordExpirationTime(String passwordExpirationTime) throws ParseException {
+        this.passwordExpirationTime = new java.sql.Timestamp(sdf.parse(passwordExpirationTime).getTime());
     }
 
     public Set<UserRole> getRoles() {
@@ -124,6 +145,38 @@ public class Login extends BaseEntity{
         this.user = user;
     }
 
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public String getEditor() {
+        return editor;
+    }
+
+    public void setEditor(String editor) {
+        this.editor = editor;
+    }
+
+    public String getCreatorIP() {
+        return creatorIP;
+    }
+
+    public void setCreatorIP(String creatorIP) {
+        this.creatorIP = creatorIP;
+    }
+
+    public String getEditorIP() {
+        return editorIP;
+    }
+
+    public void setEditorIP(String editorIP) {
+        this.editorIP = editorIP;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -135,11 +188,10 @@ public class Login extends BaseEntity{
         if (password != null ? !password.equals(login.password) : login.password != null) return false;
         if (passwordDateSet != null ? !passwordDateSet.equals(login.passwordDateSet) : login.passwordDateSet != null)
             return false;
+        if (passwordExpirationTime != null ? !passwordExpirationTime.equals(login.passwordExpirationTime) : login.passwordExpirationTime != null)
+            return false;
         if (passwordState != null ? !passwordState.equals(login.passwordState) : login.passwordState != null)
             return false;
-        if (roles != null ? !roles.equals(login.roles) : login.roles != null) return false;
-        if (timeBefore != null ? !timeBefore.equals(login.timeBefore) : login.timeBefore != null) return false;
-        if (user != null ? !user.equals(login.user) : login.user != null) return false;
         if (userId != null ? !userId.equals(login.userId) : login.userId != null) return false;
         if (userName != null ? !userName.equals(login.userName) : login.userName != null) return false;
 
@@ -154,9 +206,7 @@ public class Login extends BaseEntity{
         result = 31 * result + (passwordInitial ? 1 : 0);
         result = 31 * result + (passwordDateSet != null ? passwordDateSet.hashCode() : 0);
         result = 31 * result + (passwordState != null ? passwordState.hashCode() : 0);
-        result = 31 * result + (timeBefore != null ? timeBefore.hashCode() : 0);
-        result = 31 * result + (roles != null ? roles.hashCode() : 0);
-        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (passwordExpirationTime != null ? passwordExpirationTime.hashCode() : 0);
         return result;
     }
 }

@@ -16,32 +16,36 @@
 package rzd.pktbcki.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import rzd.pktbcki.mapper.UserMapper;
+import rzd.pktbcki.system.HttpServletRequestUtil;
+import rzd.pktbcki.util.StringToTimestampPropertyEditorSupport;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Juergen Hoeller
- * @author Ken Krebs
- * @author Arjen Poutsma
- * @author Michael Isvy
+ * @author V.N.
  */
 @Controller
 class UserController {
 
+    @Value("${application.system.name}")
+    private String systemName;
+
+
     private static final String VIEWS_USER_CREATE_OR_UPDATE_FORM = "users/createOrUpdateUserForm";
+    private static final String USER_DETAILS_FORM = "users/userDetails";
     /*
         private final UserRepository users;
 
@@ -60,6 +64,7 @@ class UserController {
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 		binder.setValidator(userFormValidator);
+        binder.registerCustomEditor(Timestamp.class, "timeBefore",  new StringToTimestampPropertyEditorSupport());
 	}
 
     @InitBinder
@@ -76,11 +81,15 @@ class UserController {
     }
 
     @PostMapping("/users/new")
-    public String processCreationForm(@Valid User user, BindingResult result) {
+    public String processCreationForm(@Valid User user, BindingResult result, HttpServletRequest request) {
         if (result.hasErrors()) {
             return VIEWS_USER_CREATE_OR_UPDATE_FORM;
         } else {
-            this.userService.insertUser(user);
+            user.setCreator(HttpServletRequestUtil.getLogin(request));
+            user.setEditor(HttpServletRequestUtil.getLogin(request));
+            user.setCreatorIP(HttpServletRequestUtil.getClientIp(request));
+            user.setEditorIP(HttpServletRequestUtil.getClientIp(request));
+            user = this.userService.insertUser(user);
             return "redirect:/users/" + user.getId();
         }
     }
@@ -92,7 +101,7 @@ class UserController {
         return "users/findUsers";
     }
 
-    @GetMapping("/users")
+    @PostMapping("/users")
     public String processFindForm(User user, BindingResult result, Map<String, Object> model) {
 
 
@@ -101,9 +110,32 @@ class UserController {
         Collection<User> results = this.userService.getUser(user);
         if (results.isEmpty()) {
             // no users found
-            result.rejectValue("lastName", "notFound", "not found");
+            model.put("msg", "Пользователь с заданами параметрами не найден");
             model.put("menu", "find users");
             return "users/findUsers";
+        } else if (results.size() == 1) {
+            // 1 user found
+            user = results.iterator().next();
+            return "redirect:/users/" + user.getId();
+        } else
+        {
+            // multiple users found
+            model.put("selections", results);
+            model.put("menu", "user list");
+            return "users/usersList";
+        }
+    }
+
+    @GetMapping("/users")
+    public String initUserListForm(User user, BindingResult result, Map<String, Object> model) {
+
+
+
+        Collection<User> results = this.userService.getUser(user);
+        if (results.isEmpty()) {
+            // no users found
+            model.put("menu", "add user");
+            return "redirect:/users/new";
         } else if (results.size() == 1) {
             // 1 user found
             user = results.iterator().next();
@@ -122,15 +154,19 @@ class UserController {
     public String initUpdateUserForm(@PathVariable("userId") int userId, Model model) {
         User user = this.userService.findById(userId);
         model.addAttribute(user);
-        model.addAttribute("menu", "find users");
+        model.addAttribute("menu", "user list");
         return VIEWS_USER_CREATE_OR_UPDATE_FORM;
     }
     @PostMapping("/users/{userId}/edit")
-    public String processUpdateUserForm(@Valid User user, BindingResult result, @PathVariable("userId") int userId) {
+    public String processUpdateUserForm(@Valid User user, BindingResult result, @PathVariable("userId") int userId, HttpServletRequest request) {
         if (result.hasErrors()) {
+            user.setId(userId);
             return VIEWS_USER_CREATE_OR_UPDATE_FORM;
         } else {
             user.setId(userId);
+            user.setEditor(HttpServletRequestUtil.getLogin(request));
+            user.setEditorIP(HttpServletRequestUtil.getClientIp(request));
+
             this.userService.updateUser(user);
             return "redirect:/users/{userId}";
         }
@@ -153,9 +189,11 @@ class UserController {
      */
     @GetMapping("/users/{userId}")
     public ModelAndView showUser(@PathVariable("userId") int userId) {
-        ModelAndView mav = new ModelAndView("users/userDetails");
-        mav.addObject(this.userService.findById(userId));
-        mav.addObject("menu", "find users");
+        ModelAndView mav = new ModelAndView(USER_DETAILS_FORM);
+//        mav.addObject(this.userService.findById(userId));
+        mav.addObject(this.userService.findByIdWithLogin(userId));
+        mav.addObject("menu", "user list");
+        mav.addObject("systemName", systemName);
         return mav;
     }
 

@@ -1,11 +1,16 @@
 package rzd.pktbcki.login;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rzd.pktbcki.mapper.LoginMapper;
 import rzd.pktbcki.mapper.LoginMapper;
+import rzd.pktbcki.mapper.UserMapper;
+import rzd.pktbcki.mapper.UserRoleMapper;
 import rzd.pktbcki.user.Login;
+import rzd.pktbcki.user.User;
+import rzd.pktbcki.user.UserRole;
 
 import java.io.Serializable;
 import java.util.List;
@@ -44,7 +49,15 @@ private static final Logger logger = LoggerFactory.getLogger( LoginService.class
     ============================================*/
     @Autowired
     private LoginMapper loginMapper;
+    @Autowired
+    private UserRoleMapper roleMapper;
+    @Autowired
+    private UserMapper userMapper;
 
+
+
+    @Value("${application.system.id}")
+    private Integer systemId;
 
     /*--------------------------------------------
     |         C O N S T R U C T O R S           |
@@ -55,9 +68,7 @@ private static final Logger logger = LoggerFactory.getLogger( LoginService.class
     |               M E T H O D S               |
     ============================================*/
 
-    public List<Login> getLoginList() {
-      return loginMapper.findAll();
-    }
+
 
     /**
      * Retrieve an {@link rzd.pktbcki.user.Login} from the data store by id.
@@ -69,25 +80,21 @@ private static final Logger logger = LoggerFactory.getLogger( LoginService.class
         return  loginMapper.findById(id);
     }
 
-    /**
-     * Retrieve an {@link rzd.pktbcki.user.Login} from the data store by id.
-     * @return the {@link rzd.pktbcki.user.Login} if found
-     */
-    @Transactional(readOnly = true)
-    List<Login> findAll(){
-        return  loginMapper.findAll();
-//        return  loginMapper.findAll();
-    }
 
 
 
 
     /**
-      * Delete user.
+      * Delete login.
       *
-      * @param id the role_id
+      * @param id the login
       */
     public void deleteLogin(Integer id) {
+        Login login = loginMapper.findById(id);
+        UserRole userRole = new UserRole();
+        userRole.setUserName(login.getUserName());
+        userRole.setSystemId(login.getSystemId());
+        roleMapper.deleteByLogin(userRole);
         loginMapper.deleteById(id);
     }
 
@@ -100,10 +107,16 @@ private static final Logger logger = LoggerFactory.getLogger( LoginService.class
      @Transactional
      public void insertLogin(Login login) {
 
-         Integer uniqueID = UUID.randomUUID().hashCode();
-         login.setId(uniqueID);
-         login.setUserName("no user");
-       loginMapper.insert(login);
+         login.setSystemId(systemId);
+         loginMapper.insert(login);
+
+         //extend the duration of the user account
+         if (login.getUser().getTimeBefore().before(login.getPasswordExpirationTime())) {
+             login.getUser().setTimeBefore(login.getPasswordExpirationTime());
+             login.getUser().setEditor(login.getEditor());
+             login.getUser().setEditorIP(login.getCreatorIP());
+             userMapper.updateUser(login.getUser());
+         }
      }
 
         /*
@@ -115,6 +128,14 @@ private static final Logger logger = LoggerFactory.getLogger( LoginService.class
 
      @Transactional
      public void updateLogin(Login login) {
+         login.setSystemId(systemId);
          loginMapper.update(login);
+     }
+
+     @Transactional
+     public boolean isNeedToChangeThePassword(Integer loginId) {
+//         login.setSystemId(systemId);
+         Login login = loginMapper.findById(loginId);
+         return PasswordState.CHANGE_IS_NECESSARY.getValue() == login.getPasswordState();
      }
 }

@@ -1,5 +1,6 @@
 package rzd.pktbcki.mapper;
 
+import rzd.pktbcki.user.Login;
 import rzd.pktbcki.user.User;
 import rzd.pktbcki.user.UserRole;
 
@@ -12,15 +13,15 @@ import java.util.Map;
  * Time: 18:13
  */
 public interface UserRoleMapper {
-    UserRole findById(Integer GroupId);
-//    UserRole findByRoleName(String roleName);
-    List<UserRole> findUserRoleByLogin(String Login);
-   	List<UserRole> findAll();
-   	List<UserRole> findAllRoles();
-    @Deprecated
+    UserRole findById(Integer RoleId);
+   	List<UserRole> findLoginRoles(Map map);
+   	List<UserRole> findRole(UserRole userRole);
+   	List<UserRole> findRolesForLogin(Map map);
+   	List<UserRole> findAllRoles(UserRole userRole);
    	boolean deleteById(Integer id);
-   	boolean deleteByRoleName(String roleName);
-   	long count();
-    void update(UserRole Group);
-    void insert(UserRole Group);
+   	boolean deleteByLogin(UserRole userRole);
+   	boolean deleteByRoleName(Map map);
+   	boolean deleteByUserName(Map map);
+    void insert(UserRole Role);
+    void insertLoginWithRole(Map map);
 }

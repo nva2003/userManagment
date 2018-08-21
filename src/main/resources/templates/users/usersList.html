@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html   xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-       layout:decorate="~{fragments/layout }">
+        layout:decorate="~{fragments/layout }">
 
 <body>
 
 <th:block layout:fragment="poststyle">
-<!--    <link rel="stylesheet" type="text/css" media="all" href="../../../webapp/css/bootstrap.min2.css"/> -->
+    <script type="text/javascript" src="../../../webapp/js/bootstrap-confirmation.min.js"  th:src=@{/js/bootstrap-confirmation.min.js}></script>
 </th:block>
 
 <div layout:fragment="content">
     <div class="container">
-        <div class="table-wrapper">
-            <div class="table-title">
-                <div class="row">
-                    <div class="col-sm-5">
-                        <h2>User <b>Management</b></h2>
+        <div>
+            <div>
+                <div>
+                    <div>
+                        <a  class="btn btn-primary"  th:href="@{/users/new}" th:text="#{btn.user.new}">Add New User</span></a>
                     </div>
-                    <div class="col-sm-7">
-                        <a  class="btn btn-primary"  th:href="@{/users/new}">Add New User</span></a>
+                    <div>
+                        <h2>Список пользователей</h2>
                     </div>
                 </div>
             </div>
@@ -25,10 +25,10 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>Last Name</th>
-                    <th>Pat.Name</th>
-                    <th>First Name</th>
-                    <th>Date Created</th>
+                    <th th:text="#{user.lastname}">Last Name</th>
+                    <th th:text="#{user.firstname}">First Name</th>
+                    <th th:text="#{user.patronymicname}">Pat.Name</th>
+                    <th>Дата создания</th>
                     <th>email</th>
                     <th>Телефон</th>
                     <th>Action</th>
@@ -38,22 +38,22 @@
                 <tr th:each="user,itrStat : ${selections}">
                     <td th:text="${itrStat.index} ">1</td>
                     <td th:text="${user.lastName}"> Michael Holz</td>
-                    <td th:text="${user.patronymicName}"> Michael Holz</td>
                     <td th:text="${user.firstName}"> Michael Holz</td>
-                    <td th:text="${user.whenCreated}">04/10/2013</td>
+                    <td th:text="${user.patronymicName}"> Michael Holz</td>
+                    <td th:text="${#calendars.format(user.whenCreated, 'yyyy-MM-dd')}">04/10/2013</td>
                     <td th:text="${user.email}">Admin</td>
                     <td th:text="${user.phone}"></td>
                     <td>
                         <a href="#" th:href="@{/users/__${user.id}__}" class="btn btn-info btn-sm edit">
-                            <span class="glyphicon glyphicon-info-sign"></span> Инфо
+                            <span class="glyphicon glyphicon-info-sign" ></span> <span  th:text="#{btn.user.info}">info</span>
                         </a>
 
                         <a href="#" th:href="@{/users/__${user.id}__/edit}" class="btn btn-info btn-sm edit">
-                            <span class="glyphicon glyphicon-edit"></span> Edit
+                            <span class="glyphicon glyphicon-edit" ></span> <span  th:text="#{btn.user.edit}">edit</span>
                         </a>
 
-                        <a href="#" th:href="@{/users/__${user.id}__/delete}" class="btn btn-info btn-sm delete">
-                            <span class="glyphicon glyphicon-remove-sign"></span> Remove
+                        <a href="#" th:href="@{/users/__${user.id}__/delete}" class="btn btn-info btn-sm delete" data-toggle="confirmation">
+                                                        <span class="glyphicon glyphicon-remove-sign"></span> <span  th:text="#{btn.user.delete}">Remove</span>
                         </a>
                     </td>
 
@@ -62,21 +62,25 @@
 
                 </tbody>
             </table>
-<!--
-            <div class="clearfix">
-                <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
-                <ul class="pagination">
-                    <li class="page-item disabled"><a href="#">Previous</a></li>
-                    <li class="page-item"><a href="#" class="page-link">1</a></li>
-                    <li class="page-item"><a href="#" class="page-link">2</a></li>
-                    <li class="page-item active"><a href="#" class="page-link">3</a></li>
-                    <li class="page-item"><a href="#" class="page-link">4</a></li>
-                    <li class="page-item"><a href="#" class="page-link">5</a></li>
-                    <li class="page-item"><a href="#" class="page-link">Next</a></li>
-                </ul>
-            </div>
--->
+
         </div>
+
+
+        <script>
+            //Enable confirmations
+            $('[data-toggle=confirmation]').confirmation({
+                rootSelector: '[data-toggle=confirmation]',
+                btnOkLabel: 'Да',
+                btnCancelLabel: 'Нет',
+                title: 'Удалить все данные о пользователе из всех систем?',
+                singleton:true,
+                popout:true
+
+
+                // other options
+            });
+        </script>
+
     </div>
 </div>
 

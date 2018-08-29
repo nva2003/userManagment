@@ -32,7 +32,7 @@ public class Login extends BaseEntity{
     private Integer userId;
     private Integer systemId;
     //    Флаг: пароль является начальным (=установил администратор)
-    private boolean passwordInitial;
+    private String passwordInitial;
     //Дата: пароль установлен администратором заново
 //    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Timestamp passwordDateSet;
@@ -48,6 +48,8 @@ public class Login extends BaseEntity{
     private Set<UserRole> roles;
 
     private User user;
+
+    private String confirmPassword;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     /*--------------------------------------------
@@ -91,15 +93,13 @@ public class Login extends BaseEntity{
         this.userId = userId;
     }
 
-    public boolean isPasswordInitial() {
+    public String getPasswordInitial() {
         return passwordInitial;
     }
 
-    public void setPasswordInitial(boolean passwordInitial) {
+    public void setPasswordInitial(String passwordInitial) {
         this.passwordInitial = passwordInitial;
     }
-
-
 
     public Integer getPasswordState() {
         return passwordState;
@@ -177,6 +177,14 @@ public class Login extends BaseEntity{
         this.editorIP = editorIP;
     }
 
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -184,14 +192,20 @@ public class Login extends BaseEntity{
 
         Login login = (Login) o;
 
-        if (passwordInitial != login.passwordInitial) return false;
+        if (creator != null ? !creator.equals(login.creator) : login.creator != null) return false;
+        if (creatorIP != null ? !creatorIP.equals(login.creatorIP) : login.creatorIP != null) return false;
+        if (editor != null ? !editor.equals(login.editor) : login.editor != null) return false;
+        if (editorIP != null ? !editorIP.equals(login.editorIP) : login.editorIP != null) return false;
         if (password != null ? !password.equals(login.password) : login.password != null) return false;
         if (passwordDateSet != null ? !passwordDateSet.equals(login.passwordDateSet) : login.passwordDateSet != null)
             return false;
         if (passwordExpirationTime != null ? !passwordExpirationTime.equals(login.passwordExpirationTime) : login.passwordExpirationTime != null)
             return false;
+        if (passwordInitial != null ? !passwordInitial.equals(login.passwordInitial) : login.passwordInitial != null)
+            return false;
         if (passwordState != null ? !passwordState.equals(login.passwordState) : login.passwordState != null)
             return false;
+        if (systemId != null ? !systemId.equals(login.systemId) : login.systemId != null) return false;
         if (userId != null ? !userId.equals(login.userId) : login.userId != null) return false;
         if (userName != null ? !userName.equals(login.userName) : login.userName != null) return false;
 
@@ -203,10 +217,15 @@ public class Login extends BaseEntity{
         int result = userName != null ? userName.hashCode() : 0;
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (userId != null ? userId.hashCode() : 0);
-        result = 31 * result + (passwordInitial ? 1 : 0);
+        result = 31 * result + (systemId != null ? systemId.hashCode() : 0);
+        result = 31 * result + (passwordInitial != null ? passwordInitial.hashCode() : 0);
         result = 31 * result + (passwordDateSet != null ? passwordDateSet.hashCode() : 0);
         result = 31 * result + (passwordState != null ? passwordState.hashCode() : 0);
         result = 31 * result + (passwordExpirationTime != null ? passwordExpirationTime.hashCode() : 0);
+        result = 31 * result + (creator != null ? creator.hashCode() : 0);
+        result = 31 * result + (editor != null ? editor.hashCode() : 0);
+        result = 31 * result + (creatorIP != null ? creatorIP.hashCode() : 0);
+        result = 31 * result + (editorIP != null ? editorIP.hashCode() : 0);
         return result;
     }
 }

@@ -104,8 +104,8 @@ class LoginController {
             model.put("menu", "user list");
             return VIEWS_LOGINS_CREATE_FORM;
         } else {
-            login.setPasswordInitial(true);//Флаг: пароль является начальным (=установил администратор)
-            login.setPasswordState(0);//Изменение пароля: необходимо / разрешено / невозможно
+            login.setPasswordInitial(PasswordInitial.INSTALLED_ADMINISTRATOR.getValue());//Флаг: пароль является начальным (=установил администратор)
+            login.setPasswordState(PasswordState.CHANGE_IS_NECESSARY.getValue());//Изменение пароля: необходимо / разрешено / невозможно
             login.setCreator(HttpServletRequestUtil.getLogin(request));
             login.setEditor(HttpServletRequestUtil.getLogin(request));
             login.setCreatorIP(HttpServletRequestUtil.getClientIp(request));

@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public enum PasswordState {
 
-    CHANGE_IS_NECESSARY(1), POSSIBLE_TO_CHANGE(2),IMPOSSIBLE_TO_CHANGE(3);
+    CHANGE_IS_NECESSARY(0), POSSIBLE_TO_CHANGE(1),IMPOSSIBLE_TO_CHANGE(2);
 
     private final int value;
 

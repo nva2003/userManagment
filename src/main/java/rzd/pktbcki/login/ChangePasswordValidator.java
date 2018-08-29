@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import rzd.pktbcki.user.EmailValidator;
 import rzd.pktbcki.user.Login;
 
 /**
@@ -32,7 +31,7 @@ import rzd.pktbcki.user.Login;
  *
  */
 @Component
-public class LoginValidator implements Validator {
+public class ChangePasswordValidator implements Validator {
 
     private static final String REQUIRED = "Обязательно";
 
@@ -66,20 +65,11 @@ public class LoginValidator implements Validator {
 
         }
 
-
-
-        // userId date validation
-        if (login.getUserId() == null) {
-            errors.rejectValue("userId", REQUIRED, REQUIRED);
-        }
-
         // password matching validation
-/*
         if (!login.getPassword().equals(login.getConfirmPassword())) {
             errors.rejectValue("confirmPassword", "password.mismatch",
                     "Password does not match");
         }
-*/
 
     }
 

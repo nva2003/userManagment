@@ -15,7 +15,9 @@ public interface LoginMapper {
    	List<Login> findAll();
    	boolean deleteById(Integer id);
     List<Login> searchLoginList(Login user);
+    Integer getPasswordState(Login user);
     void update(Login login);
+    void changePassword(Login login);
     void insert(Login login);
 
 }

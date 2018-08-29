@@ -6,6 +6,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import rzd.pktbcki.login.PasswordInitial;
+import rzd.pktbcki.login.PasswordState;
 import rzd.pktbcki.user.Login;
 import rzd.pktbcki.user.UserRole;
 
@@ -81,13 +83,14 @@ private static final Logger logger = LoggerFactory.getLogger( SturtupComponent.c
         Login login = new Login();
         login.setUserName(adminLogin);
         login.setPassword(adminPassword);
+        login.setPasswordInitial(PasswordInitial.EMBEDDED.getValue());
         login.setSystemId(systemId);
         login.setCreator("init");
         login.setEditor("init");
         login.setCreatorIP("init");
         login.setEditorIP("init");
         login.setUserId(-1);
-        login.setPasswordState(0);
+        login.setPasswordState(PasswordState.CHANGE_IS_NECESSARY.getValue());
 
         UserRole userRole = new UserRole();
         userRole.setRoleName(adminRoleName);

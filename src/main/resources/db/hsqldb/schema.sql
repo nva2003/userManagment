@@ -34,7 +34,7 @@ CREATE MEMORY TABLE logins (
   ,password     VARCHAR(128)  NOT NULL
   ,login_id INTEGER IDENTITY NOT NULL
   ,user_id      INTEGER NOT NULL
-  ,pwd_initial  BOOLEAN NOT NULL
+  ,pwd_initial  CHAR(1)  NOT NULL
   ,pwd_set_date timestamp NOT NULL
   ,pwd_expiration_time timestamp NOT NULL
   ,pwd_state    INTEGER NOT NULL

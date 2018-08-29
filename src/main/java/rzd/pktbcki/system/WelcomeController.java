@@ -5,15 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import rzd.pktbcki.user.Login;
-import rzd.pktbcki.user.User;
-import rzd.pktbcki.user.UserService;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.lang.*;
 import java.util.Map;
@@ -44,7 +39,7 @@ class WelcomeController {
 
 
     @GetMapping("/")
-    public String welcome(Map<String, Object> model ) {
+    public String welcome(Map<String, Object> model, @ModelAttribute("username") String username ) {
         ApplicationSystem applicationSystem = new ApplicationSystem();
 /*
         system.setAuditId(auditId);
@@ -53,6 +48,7 @@ class WelcomeController {
 */
         applicationSystem = systemService.findById(systemId);
         model.put("menu", "home");
+        model.put("username", username);
         model.put("applicationSystem", applicationSystem);
 
         return "welcome";

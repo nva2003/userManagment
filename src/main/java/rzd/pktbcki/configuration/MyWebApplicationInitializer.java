@@ -3,13 +3,13 @@ package rzd.pktbcki.configuration;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-import javax.servlet.Filter;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration;
+import javax.servlet.*;
 import java.io.Serializable;
+import java.util.EnumSet;
 
 /**
  * User: VNikishin
@@ -77,7 +77,16 @@ private static final Logger logger = LoggerFactory.getLogger( MyWebApplicationIn
    		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
    		characterEncodingFilter.setEncoding("UTF-8");
 
-   		return new Filter[] { characterEncodingFilter};
+        DelegatingFilterProxy shiroFilter = new DelegatingFilterProxy("shiroFilterFactoryBean");
+        shiroFilter.setTargetFilterLifecycle(true);
+//        shiroFilter.getFilterConfig().getServletContext().
+
+//        FilterRegistration.Dynamic shiroFilter = container.addFilter("shiroFilterFactoryBean", DelegatingFilterProxy.class);
+//        shiroFilter.setInitParameter("targetFilterLifecycle", "true");
+//        shiroFilter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
+
+//   		return new Filter[] { characterEncodingFilter};
+   		return new Filter[] { characterEncodingFilter,shiroFilter};
    	}
 
 /*

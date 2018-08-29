@@ -2,6 +2,15 @@ package rzd.pktbcki.configuration;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.shiro.realm.Realm;
+import org.apache.shiro.realm.jdbc.JdbcRealm;
+import org.apache.shiro.spring.config.ShiroAnnotationProcessorConfiguration;
+import org.apache.shiro.spring.config.ShiroBeanConfiguration;
+import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
+import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
+import org.apache.shiro.spring.web.config.ShiroWebConfiguration;
+import org.apache.shiro.spring.web.config.ShiroWebFilterConfiguration;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +26,11 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
@@ -42,7 +54,7 @@ import java.util.Properties;
 @PropertySources({
         @PropertySource("classpath:application.properties"),
         @PropertySource("classpath:validation.properties")
-//        @PropertySource("classpath:mybatis.properties")
+        //@PropertySource("classpath:mybatis.properties")//for apache shiro realm
 //        @PropertySource(value = "file:${file.config.emm.properties}")
 //        @PropertySource(value = "file:${file.config.emm.properties}", ignoreResourceNotFound=true)
 })
@@ -56,6 +68,11 @@ import java.util.Properties;
 
 //Scanning for mapper @MapperScan rather than the <mybatis:scan/>
 @MapperScan("rzd.pktbcki.mapper")
+
+@Import({ShiroBeanConfiguration.class,
+        ShiroAnnotationProcessorConfiguration.class,
+        ShiroWebConfiguration.class,
+        ShiroWebFilterConfiguration.class}) //shiro 1.4.0
 public abstract class MyConfiguration extends WebMvcConfigurerAdapter {
 
 
@@ -204,10 +221,10 @@ private static final Logger logger = LoggerFactory.getLogger( MyConfiguration.cl
 
     //    <!--delete after on realizae-->
 //    test
-        @Bean
-        public DataSource dataSource() {
+    @Bean
+    public DataSource dataSource() {
 
-            return new EmbeddedDatabaseBuilder()
+        return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.HSQL)
                 .addScript("classpath:db/hsqldb/schema.sql")
                 .addScript("classpath:db/hsqldb/data.sql")
@@ -216,10 +233,10 @@ private static final Logger logger = LoggerFactory.getLogger( MyConfiguration.cl
         // no need shutdown, EmbeddedDatabaseFactoryBean will take care of this
 //    		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
 //    		EmbeddedDatabase db = builder.setType(EmbeddedDatabaseType.HSQL).addScript("db/hsqldb/schema.sql").addScript("db/hsqldb/data.sql").build();
-    //		EmbeddedDatabase db = builder.generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL).addScript("db/hsqldb/schema.sql").addScript("db/hsqldb/data.sql").build();
+        //		EmbeddedDatabase db = builder.generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL).addScript("db/hsqldb/schema.sql").addScript("db/hsqldb/data.sql").build();
 //    		return db;
 
-        }
+    }
 
     //    <!-- Initialization transaction manager, use JtaTransactionManager for global tx -->
     @Bean
@@ -268,5 +285,64 @@ private static final Logger logger = LoggerFactory.getLogger( MyConfiguration.cl
                new String[]{"--url", "jdbc:hsqldb:mem:testdb", "--user", "sa", "--password", ""});
 	}
 */
+
+    // Apache Shiro Realm Configuration
+    @Bean
+    public Realm realm() {
+        JdbcRealm realm = new JdbcRealm();
+        realm.setDataSource(dataSource());
+        String userRolesQuery = env.getProperty("shiro.userRolesQuery");
+        realm.setUserRolesQuery(userRolesQuery);
+        String authenticationQuery = env.getProperty("shiro.authenticationQuery");
+        realm.setAuthenticationQuery(authenticationQuery);
+        return realm;
+//        return new MyCustomRealm();
+    }
+
+    @Bean
+    public DefaultWebSecurityManager securityManager(){
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        securityManager.setRealm(realm());
+        return securityManager;
+    }
+
+    //Apache Shiro filter Configuration
+    //ShiroFilterFactoryBean - for 1.3.2
+    //ShiroFilterChainDefinition - for 1.4.0
+    @Bean
+    public ShiroFilterChainDefinition shiroFilterChainDefinition() {
+        DefaultShiroFilterChainDefinition chainDefinition  = new DefaultShiroFilterChainDefinition();
+
+//        chainDefinition .addPathDefinition("/roles", "authc");
+//        filter.addPathDefinition("*", "anon");
+//        chainDefinition .addPathDefinition("/**", "authcBasic");//basic auth
+//        chainDefinition.addPathDefinition("/**", "anon"); // all paths are managed via annotations
+        chainDefinition.addPathDefinition("/signin", "anon"); //  paths for login
+        chainDefinition.addPathDefinition("/logout", "anon"); //  paths for login
+        chainDefinition.addPathDefinition("/css/**", "anon"); //  paths for login
+        chainDefinition.addPathDefinition("/js/**", "anon"); //  paths for login
+        chainDefinition.addPathDefinition("/images/**", "anon"); //  paths for login
+        chainDefinition.addPathDefinition("/fonts/**", "anon"); //  paths for login
+
+        // or allow basic authentication, but NOT require it.
+//        chainDefinition.addPathDefinition("/**", "authcBasic[permissive]");
+
+        // logged in users with the 'admin' role
+//        chainDefinition.addPathDefinition("/roles/**", "authc, roles[admin]");
+//        chainDefinition.addPathDefinition("/users/**", "authcBasic, roles[appadmin]");
+//        chainDefinition.addPathDefinition("/roles/**", "authc, roles[admin]");
+//        chainDefinition.addPathDefinition("/users/**", "authc, roles[appadmin]");
+//        chainDefinition.addPathDefinition("/**", "authcBasic, roles[appadmin]");
+        chainDefinition.addPathDefinition("/**", "authc, roles[appadmin]");
+//        chainDefinition.addPathDefinition("/users/**", "authc, roles[appadmin]");
+
+        // logged in users with the 'document:read' permission
+//        chainDefinition.addPathDefinition("/users/**", "authc, perms[document:read]");
+
+        // all other paths require a logged in user
+//        chainDefinition.addPathDefinition("/**", "authc");
+
+        return chainDefinition ;
+    }
 
 }

@@ -30,6 +30,9 @@
       <mybatis-spring.version>1.3.2</mybatis-spring.version>
 
       <hsqldb.version>2.4.1</hsqldb.version>
+
+      <!--<shiro.version>1.3.2</shiro.version>-->
+      <shiro.version>1.4.0</shiro.version>
   </properties>
 
   <dependencies>
@@ -148,6 +151,32 @@
     			<artifactId>hsqldb</artifactId>
     			<version>${hsqldb.version}</version>
     		</dependency>
+
+      <!--A Java library for generating String that match a given regular expression. it help you generate all Strings that matches a given Regex, random one , or one String from the matched String based on it's index. Generex is based on the library http://www.brics.dk/~amoeller/automaton/.-->
+      <dependency>
+        <groupId>com.github.mifmif</groupId>
+        <artifactId>generex</artifactId>
+        <version>1.0.2</version>
+      </dependency>
+
+      <!-- Shiro dependencies: -->
+      <dependency>
+          <groupId>org.apache.shiro</groupId>
+          <artifactId>shiro-core</artifactId>
+          <version>${shiro.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.shiro</groupId>
+          <artifactId>shiro-web</artifactId>
+          <version>${shiro.version}</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-spring -->
+      <dependency>
+          <groupId>org.apache.shiro</groupId>
+          <artifactId>shiro-spring</artifactId>
+          <version>${shiro.version}</version>
+      </dependency>
+
 
   </dependencies>
 

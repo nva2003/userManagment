@@ -58,6 +58,16 @@
         </where>
     </select>
 
+    <select id="getPasswordState"  resultType="Integer" parameterType="rzd.pktbcki.user.Login">
+      SELECT
+        pwd_state
+      FROM
+        ${schemeLOGINS}LOGINS
+        where
+          user_name = #{userName}
+          and system_id = #{systemId}
+    </select>
+
 <!-- deprcated
     <select id="findAllLogins" resultMap="loginMap">
       SELECT DISTINCT
@@ -121,6 +131,20 @@
         <if test="systemId != null and systemId != ''">
           and system_id = #{systemId}
         </if>
+
+    </update>
+
+    <update id="changePassword" parameterType="rzd.pktbcki.user.Login">
+      UPDATE ${schemeLOGINS}LOGINS SET
+
+        user_name = #{userName}
+        ,password = #{password}
+        ,pwd_state = #{passwordState}
+        ,editor = #{editor}
+        ,editor_ip = #{editorIP}
+        , when_Changed = current_timestamp
+        where user_name = #{userName}
+          and system_id = #{systemId}
 
     </update>
 

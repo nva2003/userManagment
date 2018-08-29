@@ -10,9 +10,9 @@ INSERT INTO users VALUES (8,'', 'Maria', 'Escobito','midle name', '6085557683', 
 INSERT INTO users VALUES (9,'', 'David', 'Schroeder','midle name', '6085559435','email@pktbcki.ru','company','department','title',current_timestamp,'ip','numberASOZ',current_timestamp ,current_timestamp ,'1','2', 'Creator_IP', 'Editor_IP');
 INSERT INTO users VALUES (10,'', 'Carlos', 'Estaban','midle name',  '6085555487', 'email@pktbcki.ru','company','department','title',current_timestamp,'ip','numberASOZ',current_timestamp ,current_timestamp ,'1','2', 'Creator_IP', 'Editor_IP');
 
-INSERT INTO logins VALUES ('aks',1,'123',1,11,false,current_timestamp,current_timestamp,0 ,current_timestamp,current_timestamp,  'ctreator', 'editor', 'Creator_IP', 'Editor_IP');
-INSERT INTO logins VALUES ('login1',1,'123',2,1,false,current_timestamp,current_timestamp,0 ,current_timestamp,current_timestamp,  'ctreator', 'editor', 'Creator_IP', 'Editor_IP');
-INSERT INTO logins VALUES ('login2',1,'123',3,1,false,current_timestamp,current_timestamp,0 ,current_timestamp,current_timestamp,  'ctreator', 'editor', 'Creator_IP', 'Editor_IP');
+INSERT INTO logins VALUES ('aks',1,'123',1,11,'0',current_timestamp,current_timestamp,0 ,current_timestamp,current_timestamp,  'ctreator', 'editor', 'Creator_IP', 'Editor_IP');
+INSERT INTO logins VALUES ('login1',1,'123',2,1,'0',current_timestamp,current_timestamp,0 ,current_timestamp,current_timestamp,  'ctreator', 'editor', 'Creator_IP', 'Editor_IP');
+INSERT INTO logins VALUES ('login2',1,'123',3,1,'0',current_timestamp,current_timestamp,0 ,current_timestamp,current_timestamp,  'ctreator', 'editor', 'Creator_IP', 'Editor_IP');
 
 
 INSERT INTO user_roles VALUES (1,'login1','role_name','description',current_timestamp,current_timestamp, 1 , 'ctreator', 'editor', 'Creator_IP', 'Editor_IP');
